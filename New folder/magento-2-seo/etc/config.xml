@@ -1,0 +1,17 @@
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Store:etc/config.xsd">
+    <default>
+        <seo>
+            <general>
+                <nofollow_sr>1</nofollow_sr>
+                <product_gallery>1</product_gallery>
+                <alternate_meta>1</alternate_meta>
+                <title_separator>-</title_separator>
+                <noroute>1</noroute>
+            </general>
+            <duplicate>
+                <canonical>1</canonical>
+            </duplicate>
+        </seo>
+    </default>
+</config>

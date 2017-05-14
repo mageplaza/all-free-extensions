@@ -1,0 +1,34 @@
+<?php
+/**
+ * Learn more https://developers.google.com/structured-data/breadcrumbs#examples
+ * base template: app/design/frontend/base/default/template/page/html/breadcrumbs.phtml
+ */
+?>
+
+
+	<!--Breadcrumbs Data by Mageplaza SEO-->
+<?php if ($crumbs): ?>
+	<script type="application/ld+json">
+{
+  "@context": "http://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [{
+  <?php $i = 0; ?>
+    <?php foreach ($crumbs as $_crumbName => $_crumbInfo): ?>
+			<?php $i++; ?>
+    "@type": "ListItem",
+    "position": <?php echo $i; ?>,
+    "item": {
+      "@id": "<?php echo $_crumbInfo['link']; ?>",
+      "name": "<?php echo $_crumbInfo['label']; ?>"
+    }
+    <?php if (!$_crumbInfo['last']) {
+				echo ',';
+			} ?>
+		<?php endforeach; ?>
+  }]
+
+}
+
+    </script>
+<?php endif; ?>

@@ -1,0 +1,13 @@
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Store:etc/config.xsd">
+    <default>
+        <googleanalytics>
+            <general>
+                <is_enabled>0</is_enabled>
+                <link_attribution>0</link_attribution>
+                <ip_anonymization>0</ip_anonymization>
+                <debug>0</debug>
+            </general>
+        </googleanalytics>
+    </default>
+</config>

@@ -1,0 +1,40 @@
+<?php
+$helper=$block->getHelper();
+if(!$helper->isEnabled()) return;
+
+?>
+
+<script>
+    (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+            (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+        m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+    })(window,document,'script','<?php echo !$this->getDebug() ? '//www.google-analytics.com/analytics.js' : 'https://www.google-analytics.com/analytics_debug.js';?>','ga');
+
+    <?php if($helper->getDebug()): ?>
+    window.ga_debug = {trace: true};
+    <?php endif;?>
+
+    ga('create', '<?php echo $helper->getMainTracking()?>', 'auto');
+
+    <?php if($helper->getLinkAttribution()):?>
+    ga('require', 'linkid');   // Load the plug-in. Note: this call will block until the plug-in is loaded.
+    <?php endif;?>
+
+    ga('require', 'ec');
+
+    <?php if($helper->getIpAnonymization()):?>
+    ga('set', 'anonymizeIp', true);
+    <?php endif;?>
+
+    ga('send', 'pageview');
+
+    <?php
+    if($helper->getSecondTracking()){ ?>
+    ga('create', '<?php echo $helper->getSecondTracking();?>', 'auto', {'name': 'second'});
+    ga('second.send', 'pageview');
+    <?php }
+    ?>
+
+
+
+</script>

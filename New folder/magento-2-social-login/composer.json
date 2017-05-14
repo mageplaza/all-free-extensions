@@ -1,0 +1,30 @@
+{
+  "name": "mageplaza/magento-2-social-login",
+  "description": "Magento 2 Social Login Extension",
+  "require": {
+    "mageplaza/module-core": "*",
+    "hybridauth/hybridauth": "2.9.1"
+  },
+  "type": "magento2-module",
+  "version": "2.3.5",
+  "license": [
+    "OSL-3.0",
+    "AFL-3.0"
+  ],
+  "authors": [
+    {
+      "name": "Mageplaza",
+      "email": "hi@mageplaza.com",
+      "homepage": "https://www.mageplaza.com",
+      "role": "Leader"
+    }
+  ],
+  "autoload": {
+    "files": [
+      "registration.php"
+    ],
+    "psr-4": {
+      "Mageplaza\\SocialLogin\\": ""
+    }
+  }
+}
