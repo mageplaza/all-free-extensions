@@ -2,13 +2,13 @@
 
 The Top Magento 2 Extensions by Mageplaza comes with a bulk of amazing features that allow the merchants to do more on their online stores via the richness of the categories including Sales and Motivations, Content Management, even User Experience, etc.
 
-## What is Magento 2 Commerce?
+## What is Magento 2 extensions for Commerce?
 
 By now, Magento Commerce is a tendency platform for the usage of more 200,000 online retailers on the world. Because of providing open source, cloud-based digital commerce platform and omnichannel solutions, so the merchants feel freely to integrate digital and physical shopping experiences. With the powerful and outstanding features, every store owner has a chance to manage the performance to the content on the website very well, and bring the best interface to customers who come to visit.
 
 Magento 2 Modules, a new era of Commerce Innovation, said hello to world officially on November 17, 2015 and at the start of 2016, Magento 2.0 is live on your site. Magento 2.0 is released with the mission of enhancing user engagement, making navigation smooth, increasing conversion rate as well as expanding the revenue. Due to that, Magento 2 is Modules always concentrated on developing the better code inherited by the last version to boost conversion rates, and business agility and productivity improvements in the more effective way.
 
-## When Magento 2 was released?
+## When Magento 2 extensions was released?
 
 Until May 2015, Magento’s market share among the 30 most popular eCommerce platforms is about 29.8% and the number will continue to rise when on November 17, 2015, Magento 2 was released with improved performance and better code base than the previous version. In addition, Magento 2 supports new features to boost conversion rates more effectively, and business agility and productivity improvements. This platform also builds on open source heritage and offers unmatched flexibility and innovation opportunities to the global ecosystem of partners and developers.
 
