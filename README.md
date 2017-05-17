@@ -17,3 +17,8 @@ Until May 2015, Magento’s market share among the 30 most popular eCommerce pla
 Basing on Magento 2.0 version, the vendors like Mageplaza pay attention on creating Magento 2.0 extensions as many as the merchants’ demand. All of the extensions are the open-source module and attached to the detailed user guide, thus it is easy to customize their configuration how to fit with your store in the appearance and the code without any requirement of code experience. Installing Magento 2 extension on your store will aid you to gain the highest achievement of revenue while don’t need to pay money for PHP outsource.
 
 Magento 2 modules takes care of every parameter of your website to convert a visitor to a customer in loyalty group. By providing multiple solutions about sales, promotions, content management,and user engagement, ensure that you can increase the conversion rate by 30%, and then boost your online sales up to 60% with a huge size of loyal customers. The benefits, Magento 2 modules extensions provide, make the online retailers fall in love with them as well as put all their trust to run Magento 2 extensions on the eCommerce store.
+
+## Suggested extensions on Marketplace
+
+- One Step Checkout: https://marketplace.magento.com/mageplaza-magento-2-one-step-checkout-extension.html
+- Layered Navigation https://marketplace.magento.com/mageplaza-layered-navigation-m2.html
