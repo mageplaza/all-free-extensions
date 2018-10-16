@@ -45,11 +45,6 @@ git clone https://github.com/mageplaza/magento-2-product-slider
 rm -rf magento-2-seo
 git clone https://github.com/mageplaza/magento-2-seo
 
-rm -rf magento-2-social-login
-git clone https://github.com/mageplaza/magento-2-social-login
-
-rm -rf magento-2-blog
-git clone https://github.com/mageplaza/magento-2-blog
 
 
 

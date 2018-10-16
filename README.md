@@ -2,6 +2,24 @@
 
 The Top Magento 2 Extensions by Mageplaza comes with a bulk of amazing features that allow the merchants to do more on their online stores via the richness of the categories including Sales and Motivations, Content Management, even User Experience, etc.
 
+## List of all Magento 2 Free extensions
+
+- [Banner Slider](https://github.com/mageplaza/magento-2-banner-slider)
+- [Product Slider](https://github.com/mageplaza/magento-2-product-slider)
+- [SEO](https://github.com/mageplaza/magento-2-seo)
+- [Social Login](https://github.com/mageplaza/magento-2-social-login)
+- [SMTP](https://github.com/mageplaza/magento-2-smtp)
+- [Better Popup](https://github.com/mageplaza/magento-2-better-popup)
+- [Google Recaptcha](https://github.com/mageplaza/magento-2-google-recaptcha)
+- [Reports](https://github.com/mageplaza/magento-2-reports)
+- [Blog](https://github.com/mageplaza/magento-2-blog)
+- [Security](https://github.com/mageplaza/magento-2-security)
+- [Multi Flat Rates](https://github.com/mageplaza/magento-2-multi-flat-rates)
+- [Ajax Layered Navigation](https://github.com/mageplaza/magento-2-ajax-layered-navigation)
+- [Google Xml Sitemap](https://github.com/mageplaza/magento-2-google-xml-sitemap)
+- [Delete Orders](https://github.com/mageplaza/magento-2-delete-orders)
+
+
 ## What is Magento 2 extensions for Commerce?
 
 By now, Magento Commerce is a tendency platform for the usage of more 200,000 online retailers on the world. Because of providing open source, cloud-based digital commerce platform and omnichannel solutions, so the merchants feel freely to integrate digital and physical shopping experiences. With the powerful and outstanding features, every store owner has a chance to manage the performance to the content on the website very well, and bring the best interface to customers who come to visit.
