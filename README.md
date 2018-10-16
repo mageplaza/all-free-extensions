@@ -1,4 +1,4 @@
-# Mageplaza extensions for Magento 2
+# Mageplaza Free Extensions for Magento 2
 
 The Top Magento 2 Extensions by Mageplaza comes with a bulk of amazing features that allow the merchants to do more on their online stores via the richness of the categories including Sales and Motivations, Content Management, even User Experience, etc.
 
