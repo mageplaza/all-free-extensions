@@ -1,0 +1,46 @@
+<?xml version="1.0"?>
+<!--
+/**
+ * Mageplaza
+ *
+ * NOTICE OF LICENSE
+ *
+ * This source file is subject to the Mageplaza.com license that is
+ * available through the world-wide-web at this URL:
+ * https://mageplaza.com/LICENSE.txt
+ *
+ * DISCLAIMER
+ *
+ * Do not edit or add to this file if you wish to upgrade this extension to newer
+ * version in the future.
+ *
+ * @category    Mageplaza
+ * @package     Mageplaza_Security
+ * @copyright   Copyright (c) Mageplaza (https://www.mageplaza.com/)
+ * @license     http://mageplaza.com/LICENSE.txt
+ */
+-->
+<page xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:framework:View/Layout/etc/page_configuration.xsd">
+    <body>
+        <referenceBlock name="adminhtml.user.grid.container">
+            <referenceBlock name="adminhtml.user.grid">
+                <referenceBlock name="permission.user.grid.columnSet">
+                    <block class="Magento\Backend\Block\Widget\Grid\Column" as="last.login" after="email">
+                        <arguments>
+                            <argument name="header" xsi:type="string" translate="true">Last Login</argument>
+                            <argument name="type" xsi:type="string">text</argument>
+                            <argument name="renderer" xsi:type="string">Mageplaza\Security\Block\Widget\Grid\Column\Renderer\LastTimeLogin</argument>
+                        </arguments>
+                    </block>
+                    <block class="Magento\Backend\Block\Widget\Grid\Column" as="ip.address" after="last.login">
+                        <arguments>
+                            <argument name="header" xsi:type="string" translate="true">IP Address</argument>
+                            <argument name="type" xsi:type="string">text</argument>
+                            <argument name="renderer" xsi:type="string">Mageplaza\Security\Block\Widget\Grid\Column\Renderer\Ip</argument>
+                        </arguments>
+                    </block>
+                </referenceBlock>
+            </referenceBlock>
+        </referenceBlock>
+    </body>
+</page>

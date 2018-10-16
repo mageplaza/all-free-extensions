@@ -1,0 +1,22 @@
+{
+    "name": "mageplaza/module-multiflatrates",
+    "description": "",
+    "type": "magento2-module",
+    "license": "proprietary",
+    "authors": [
+        {
+            "name": "Mageplaza",
+            "email": "hi@mageplaza.com"
+        }
+    ],
+    "minimum-stability": "dev",
+    "require": {},
+    "autoload": {
+        "files": [
+            "registration.php"
+        ],
+        "psr-4": {
+            "Mageplaza\\Multiflatrates\\": ""
+        }
+    }
+}

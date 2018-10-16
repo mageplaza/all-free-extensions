@@ -1,0 +1,27 @@
+{
+  "name": "mageplaza/module-security",
+  "description": "Mageplaza Security M2",
+  "require": {
+    "mageplaza/module-core": "^1.3.13",
+    "sinergi/browser-detector": "*"
+  },
+  "type": "magento2-module",
+  "version": "1.1.3",
+  "license": "proprietary",
+  "authors": [
+    {
+      "name": "Mageplaza",
+      "email": "support@mageplaza.com",
+      "homepage": "https://www.mageplaza.com",
+      "role": "Technical Support"
+    }
+  ],
+  "autoload": {
+    "files": [
+      "registration.php"
+    ],
+    "psr-4": {
+      "Mageplaza\\Security\\": ""
+    }
+  }
+}

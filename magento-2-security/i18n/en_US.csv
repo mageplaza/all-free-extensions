@@ -1,0 +1,67 @@
+"User Name","User Name"
+Status,Status
+Time,Time
+"Login Log","Login Log"
+"Login information","Login information"
+ID,ID
+IP,IP
+URL,URL
+"Referer URL","Referer URL"
+Success,Success
+Failed,Failed
+"Browser Information","Browser Information"
+Brower,Brower
+"Brower Version","Brower Version"
+Platform,Platform
+"Platform Version","Platform Version"
+"Security Checklist","Security Checklist"
+"Login record details","Login record details"
+"This log no longer exists.","This log no longer exists."
+"You don't have permission to access this page","You don't have permission to access this page"
+"Your IP has been blocked.","Your IP has been blocked."
+"Check admin's username:","Check admin's username:"
+"The following usernames are not secured: %1. Hackers can guest username easily. Click on an user to change username.","The following usernames are not secured: %1. Hackers can guest username easily. Click on an user to change username."
+"Username: ""%1"" is not secure.","Username: ""%1"" is not secure."
+"Fix it","Fix it"
+"There is no common user in your store.","There is no common user in your store."
+"Check captcha:","Check captcha:"
+"Frontend captcha is not enabled. Hackers may carry out brute-force attacks on your customers' accounts","Frontend captcha is not enabled. Hackers may carry out brute-force attacks on your customers' accounts"
+"Frontend captcha is enabled.","Frontend captcha is enabled."
+"Backend captcha is not enabled. To protect your backend from brute-force attacks, you should enable it.","Backend captcha is not enabled. To protect your backend from brute-force attacks, you should enable it."
+"Backend captcha is enabled.","Backend captcha is enabled."
+"Check Magento Version:","Check Magento Version:"
+"Your Magento version is: %1, the latest version is: %2","Your Magento version is: %1, the latest version is: %2"
+Upgrade,Upgrade
+"Your store is running on the latest version.","Your store is running on the latest version."
+"Check database prefix:","Check database prefix:"
+"Your store's database is good.","Your store's database is good."
+"Your store's database hasn't table prefix.","Your store's database hasn't table prefix."
+"Please update to %1 edition to have these issues solved automatically.","Please update to %1 edition to have these issues solved automatically."
+"Exception printing is disabled by default for security reasons.","Exception printing is disabled by default for security reasons."
+"%store_url - Security Alert by Mageplaza","%store_url - Security Alert by Mageplaza"
+"Bad Login Notification","Bad Login Notification"
+"Mageplaza Security detected unusual activities in your store. You're getting this email to make sure it was you or your team.","Mageplaza Security detected unusual activities in your store. You're getting this email to make sure it was you or your team."
+User,User
+"CHECK ACTIVITY","CHECK ACTIVITY"
+"You received this email as the security alerts are considered to be important to your store(s).","You received this email as the security alerts are considered to be important to your store(s)."
+"%store_url - Lock User Alert by Mageplaza","%store_url - Lock User Alert by Mageplaza"
+"Lock User Notification","Lock User Notification"
+"User '%user_name' is locked","User '%user_name' is locked"
+Security,Security
+General,General
+Enable,Enable
+"Send warning emails to","Send warning emails to"
+"All warning letters will be sent to these emails. Separated with add (,)","All warning letters will be sent to these emails. Separated with add (,)"
+"Brute Force Protection","Brute Force Protection"
+"Maximum number of failed login attempts","Maximum number of failed login attempts"
+"Allowed duration","Allowed duration"
+"Locked User Alert","Locked User Alert"
+"Email template","Email template"
+"Blacklist/Whitelist IPs","Blacklist/Whitelist IPs"
+Blacklist(s),Blacklist(s)
+Whitelist(s),Whitelist(s)
+"Last Login","Last Login"
+"IP Address","IP Address"
+"Browser Agent","Browser Agent"
+"Referer Url","Referer Url"
+View,View

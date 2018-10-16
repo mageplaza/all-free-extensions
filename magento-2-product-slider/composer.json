@@ -1,0 +1,26 @@
+{
+  "name": "mageplaza/magento-2-product-slider",
+  "description": "Magento 2 Product Slider",
+  "require": {
+    "mageplaza/module-core": "^1.3.13"
+  },
+  "type": "magento2-module",
+  "version": "2.0.2",
+  "license": "proprietary",
+  "authors": [
+    {
+      "name": "Mageplaza",
+      "email": "support@mageplaza.com",
+      "homepage": "https://www.mageplaza.com",
+      "role": "Technical Support"
+    }
+  ],
+  "autoload": {
+    "files": [
+      "registration.php"
+    ],
+    "psr-4": {
+      "Mageplaza\\Productslider\\": ""
+    }
+  }
+}

@@ -1,0 +1,63 @@
+<?php
+/**
+ * Mageplaza
+ *
+ * NOTICE OF LICENSE
+ *
+ * This source file is subject to the Mageplaza.com license that is
+ * available through the world-wide-web at this URL:
+ * https://www.mageplaza.com/LICENSE.txt
+ *
+ * DISCLAIMER
+ *
+ * Do not edit or add to this file if you wish to upgrade this extension to newer
+ * version in the future.
+ *
+ * @category    Mageplaza
+ * @package     Mageplaza_Blog
+ * @copyright   Copyright (c) 2018 Mageplaza (http://www.mageplaza.com/)
+ * @license     https://www.mageplaza.com/LICENSE.txt
+ */
+
+/** @var \Mageplaza\Blog\Block\Author\Widget $block */
+
+$author = $block->getCurrentAuthor();
+if ($author): ?>
+<div class="mp-sidebar mpcss">
+	<div class="row">
+        <div class="author-name col-xs-12">
+            <h3><?php echo $author->getName() ?></h3>
+        </div>
+        <div class="author-image col-xs-12">
+            <img class="img-responsive"
+                 src="<?php echo ($author->getImage()) ? $block->resizeImage($author->getImage(), '135x', \Mageplaza\Blog\Helper\Image::TEMPLATE_MEDIA_TYPE_AUTH) : $block->getDefaultAuthorImage(); ?>"
+                 alt="<?php echo $block->escapeHtml($author->getName()); ?>"/>
+        </div>
+        <div class="author-content col-xs-12">
+            <?php echo $block->getPageFilter(($author->getShortDescription())) ? $block->getPageFilter(($author->getShortDescription())) : 'No info'; ?>
+        </div>
+        <div class="author-social col-xs-12">
+            <?php if ($author->getFacebookLink()): ?>
+                <a href="<?php echo $author->getFacebookLink() ?>" target="_blank">
+                    <img class="img-responsive" src="<?php echo $this->getViewFileUrl('Mageplaza_Blog::media/images/facebook.png') ?>" align="middle"
+                        alt="<?php echo $block->escapeHtml($author->getName()); ?>"/>
+                </a>
+            <?php else: ?>
+                <img class="img-responsive" src="<?php echo $this->getViewFileUrl('Mageplaza_Blog::media/images/facebookoff.png') ?>" align="middle"
+                     alt="<?php echo $block->escapeHtml($author->getName()); ?>"/>
+            <?php endif; ?>
+            <?php if ($author->getTwitterLink()): ?>
+                <a href="<?php echo $author->getTwitterLink() ?>" target="_blank">
+                    <img class="img-responsive" src="<?php echo $this->getViewFileUrl('Mageplaza_Blog::media/images/twitter.png') ?>" align="middle"
+                         alt="<?php echo $block->escapeHtml($author->getName()); ?>"/>
+                </a>
+            <?php else: ?>
+                <img class="img-responsive" src="<?php echo $this->getViewFileUrl('Mageplaza_Blog::media/images/twitter-off.png') ?>" align="middle"
+                     alt="<?php echo $block->escapeHtml($author->getName()); ?>"/>
+            <?php endif; ?>
+            <div class="mp-clear"></div>
+        </div>
+        <div class="author-border col-xs-12"></div>
+	</div>
+</div>
+<?php endif; ?>

@@ -1,0 +1,40 @@
+<?php
+/**
+ * Mageplaza
+ *
+ * NOTICE OF LICENSE
+ *
+ * This source file is subject to the Mageplaza.com license that is
+ * available through the world-wide-web at this URL:
+ * https://www.mageplaza.com/LICENSE.txt
+ *
+ * DISCLAIMER
+ *
+ * Do not edit or add to this file if you wish to upgrade this extension to newer
+ * version in the future.
+ *
+ * @category    Mageplaza
+ * @package     Mageplaza_Security
+ * @copyright   Copyright (c) Mageplaza (https://www.mageplaza.com/)
+ * @license     https://www.mageplaza.com/LICENSE.txt
+ */
+?>
+
+<h1>
+    <?php echo $this->errorCode ? $this->errorCode . ' - ' : '' ?>
+    <?php echo $this->pageTitle ?>
+</h1>
+<?php if ('' == $this->_config->action): ?>
+    <p><em><?php echo __('Exception printing is disabled by default for security reasons.') ?></em></p>
+<?php elseif ($this->reportData) : ?>
+    <div class="trace-container">
+        <div class="trace">
+            <pre><?php echo $this->reportData ?><br/>
+Please read the following materials to resolve the problem:
+ - User Guide http://docs.mageplaza.com/security/
+ - FAQs https://www.mageplaza.com/faqs/
+ - Issues https://github.com/mageplaza/magento-2-security/issues'
+            </pre>
+        </div>
+    </div>
+<?php endif; ?>

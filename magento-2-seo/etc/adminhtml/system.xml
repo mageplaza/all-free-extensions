@@ -1,0 +1,208 @@
+<?xml version="1.0"?>
+<!--
+/**
+ * Mageplaza
+ *
+ * NOTICE OF LICENSE
+ *
+ * This source file is subject to the Mageplaza.com license that is
+ * available through the world-wide-web at this URL:
+ * https://www.mageplaza.com/LICENSE.txt
+ *
+ * DISCLAIMER
+ *
+ * Do not edit or add to this file if you wish to upgrade this extension to newer
+ * version in the future.
+ *
+ * @category    Mageplaza
+ * @package     Mageplaza_Seo
+ * @copyright   Copyright (c) Mageplaza (http://www.mageplaza.com/)
+ * @license     https://www.mageplaza.com/LICENSE.txt
+ */
+-->
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Config:etc/system_file.xsd">
+    <system>
+        <section id="seo" translate="label" type="text" sortOrder="550" showInDefault="1" showInWebsite="1" showInStore="1">
+            <class>separator-top</class>
+            <label>SEO</label>
+            <tab>mageplaza</tab>
+            <resource>Mageplaza_Seo::configuration</resource>
+            <group id="general" translate="label" type="text" sortOrder="1" showInDefault="1" showInWebsite="1" showInStore="1">
+                <label>General</label>
+                <field id="head" translate="label" type="button" sortOrder="1" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <frontend_model>Mageplaza\Core\Block\Adminhtml\System\Config\Head</frontend_model>
+                    <comment><![CDATA[
+                        <ul class="mageplaza-head">
+                            <li><a href="https://docs.mageplaza.com/seo-ultimate/" target="_blank">User Guide</a>    </li>
+                            <li>Boost up to ↑198% site traffic, ↑32% site ranking with <a href="https://www.mageplaza.com/magento-2-seo-extension/pricing.html?utm_source=free-extension&utm_medium=documents&utm_campaign=m2-seo" target="_blank">Learn more</a></li>
+                            <li><a href="https://mageplaza.freshdesk.com/" target="_blank">Helpdesk</a> </li>
+                            <li><a href="https://goo.gl/forms/SrTm7YUxZoCzixhH3" target="_blank">Request features</a> </li>
+                            <li>Increase 25% conversion rate with <a href="https://goo.gl/6chU3c" target="_blank">Layered Navigation</a></li>
+                        </ul>
+                        ]]></comment>
+                </field>
+                <field id="enabled" translate="label" type="select" sortOrder="10" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Enable</label>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                </field>
+            </group>
+            <group id="duplicate" translate="label" type="text" sortOrder="2" showInDefault="1" showInWebsite="1" showInStore="1">
+                <label>Duplicate Content</label>
+                <field id="category_canonical_tag" translate="label comment" type="select" sortOrder="10" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Use Canonical Link Meta Tag For Categories</label>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                    <comment>Avoid duplicate content.</comment>
+                </field>
+                <field id="product_canonical_tag" translate="label comment" type="select" sortOrder="20" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Use Canonical Link Meta Tag For Products</label>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                    <comment>Avoid duplicate content.</comment>
+                </field>
+            </group>
+            <group id="richsnippets" translate="label" type="text" sortOrder="20" showInDefault="1" showInWebsite="1" showInStore="1">
+                <label>Structured Data</label>
+                <field id="enable_product" translate="label" type="select" sortOrder="10" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Enable Product Structured Data</label>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                    <comment><![CDATA[ Disable this feature if your theme or module implements it's own product snippets. <a href="https://developers.google.com/search/docs/data-types/products" target="_blank">Learn more</a> ]]></comment>
+                </field>
+                <field id="enable_site_link" translate="label" type="select" sortOrder="20" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Enable Sitelinks Searchbox</label>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                    <comment><![CDATA[Learn more <a href="https://developers.google.com/search/docs/data-types/sitelinks-searchbox" target="_blank">here</a> ]]></comment>
+                </field>
+            </group>
+            <group id="info" translate="label" type="text" sortOrder="22" showInDefault="1" showInWebsite="1" showInStore="1">
+                <label>Business information</label>
+                <field id="enable" translate="label" type="select" sortOrder="1" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Enable Business information</label>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                    <comment><![CDATA[Learn more <a href="https://developers.google.com/search/docs/data-types/corporate-contacts" target="_blank">here</a> ]]></comment>
+                </field>
+                <field id="business_name" translate="label" type="text" sortOrder="10" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Business Name</label>
+                    <depends>
+                        <field id="enable">1</field>
+                    </depends>
+                </field>
+                <field id="customer_service_phone" translate="label" type="text" sortOrder="20" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Customer Service Phone</label>
+                    <depends>
+                        <field id="enable">1</field>
+                    </depends>
+                </field>
+                <field id="customer_service_contact_option" translate="label" type="text" sortOrder="30" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Customer Service Contact Option</label>
+                    <depends>
+                        <field id="enable">1</field>
+                    </depends>
+                </field>
+                <field id="customer_service_area_serve" translate="label" type="text" sortOrder="40" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Customer Service Area Serve</label>
+                    <depends>
+                        <field id="enable">1</field>
+                    </depends>
+                </field>
+                <field id="technical_support_phone" translate="label" type="text" sortOrder="50" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Technical Support Phone</label>
+                    <depends>
+                        <field id="enable">1</field>
+                    </depends>
+                </field>
+                <field id="technical_support_contact_option" translate="label comment" type="text" sortOrder="60" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Technical Support Contact Option</label>
+                    <depends>
+                        <field id="enable">1</field>
+                    </depends>
+                </field>
+                <field id="technical_support_area_serve" translate="label" type="text" sortOrder="70" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Technical Support Area Serve</label>
+                    <depends>
+                        <field id="enable">1</field>
+                    </depends>
+                </field>
+                <field id="sales_phone" translate="label" type="text" sortOrder="80" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Sales Service Phone</label>
+                    <depends>
+                        <field id="enable">1</field>
+                    </depends>
+                </field>
+                <field id="sales_contact_option" translate="label" type="text" sortOrder="90" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Sales Contact Option</label>
+                    <depends>
+                        <field id="enable">1</field>
+                    </depends>
+                </field>
+                <field id="sales_area_serve" translate="label" type="text" sortOrder="100" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Sales Area Serve</label>
+                    <depends>
+                        <field id="enable">1</field>
+                    </depends>
+                </field>
+            </group>
+            <!--Social Profiles-->
+            <group id="social_profiles" translate="label" type="text" sortOrder="22" showInDefault="1" showInWebsite="1" showInStore="1">
+                <label>Social Profiles</label>
+                <field id="facebook" translate="label" type="text" sortOrder="10" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Facebook</label>
+                    <comment><![CDATA[Google will only show verified profiles. <a href="https://developers.google.com/search/docs/data-types/social-profile-links">Learn more</a>]]></comment>
+                </field>
+                <field id="twitter" translate="label" type="text" sortOrder="20" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Twitter</label>
+                    <comment><![CDATA[Google will only show verified profiles. <a href="https://developers.google.com/search/docs/data-types/social-profile-links">Learn more</a>]]></comment>
+                </field>
+                <field id="google" translate="label" type="text" sortOrder="30" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Google+</label>
+                    <comment><![CDATA[Google will only show verified profiles. <a href="https://developers.google.com/search/docs/data-types/social-profile-links">Learn more</a>]]></comment>
+                </field>
+                <field id="instagram" translate="label" type="text" sortOrder="40" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Instagram</label>
+                    <comment><![CDATA[Google will only show verified profiles. <a href="https://developers.google.com/search/docs/data-types/social-profile-links">Learn more</a>]]></comment>
+                </field>
+                <field id="youtube" translate="label" type="text" sortOrder="50" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>YouTube</label>
+                    <comment><![CDATA[Google will only show verified profiles. <a href="https://developers.google.com/search/docs/data-types/social-profile-links">Learn more</a>]]></comment>
+                </field>
+                <field id="linkedin" translate="label" type="text" sortOrder="60" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>LinkedIn</label>
+                    <comment><![CDATA[Google will only show verified profiles. <a href="https://developers.google.com/search/docs/data-types/social-profile-links">Learn more</a>]]></comment>
+                </field>
+                <field id="myspace" translate="label" type="text" sortOrder="70" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Myspace</label>
+                    <comment><![CDATA[Google will only show verified profiles. <a href="https://developers.google.com/search/docs/data-types/social-profile-links">Learn more</a>]]></comment>
+                </field>
+                <field id="pinterest" translate="label" type="text" sortOrder="80" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Pinterest</label>
+                    <comment><![CDATA[Google will only show verified profiles. <a href="https://developers.google.com/search/docs/data-types/social-profile-links">Learn more</a>]]></comment>
+                </field>
+                <field id="soundcloud" translate="label" type="text" sortOrder="90" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>SoundCloud</label>
+                    <comment><![CDATA[Google will only show verified profiles. <a href="https://developers.google.com/search/docs/data-types/social-profile-links">Learn more</a>]]></comment>
+                </field>
+                <field id="tumblr" translate="label" type="text" sortOrder="100" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Tumblr</label>
+                    <comment><![CDATA[Google will only show verified profiles. <a href="https://developers.google.com/search/docs/data-types/social-profile-links">Learn more</a>]]></comment>
+                </field>
+            </group>
+            <group id="verification" translate="label comment" type="text" sortOrder="40" showInDefault="1" showInWebsite="1" showInStore="1">
+                <label>Verifications</label>
+                <field id="google" translate="label" type="text" sortOrder="10" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Google Search Console</label>
+                    <comment><![CDATA[Enter verification code, it will be added into <head> tag]]></comment>
+                </field>
+                <field id="bing" translate="label comment" type="text" sortOrder="20" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Bing Webmaster Tools</label>
+                    <comment><![CDATA[Enter verification code, it will be added into <head> tag]]></comment>
+                </field>
+                <field id="pinterest" translate="label comment" type="text" sortOrder="30" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Pinterest</label>
+                    <comment><![CDATA[Enter verification code, it will be added into <head> tag]]></comment>
+                </field>
+                <field id="yandex" translate="label comment" type="text" sortOrder="40" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Yandex Webmaster Tools</label>
+                    <comment><![CDATA[Enter verification code, it will be added into <head> tag]]></comment>
+                </field>
+            </group>
+        </section>
+    </system>
+</config>

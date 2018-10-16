@@ -1,0 +1,104 @@
+<?php
+/**
+ * Mageplaza
+ *
+ * NOTICE OF LICENSE
+ *
+ * This source file is subject to the Mageplaza.com license that is
+ * available through the world-wide-web at this URL:
+ * https://www.mageplaza.com/LICENSE.txt
+ *
+ * DISCLAIMER
+ *
+ * Do not edit or add to this file if you wish to upgrade this extension to newer
+ * version in the future.
+ *
+ * @category    Mageplaza
+ * @package     Mageplaza_Blog
+ * @copyright   Copyright (c) 2018 Mageplaza (http://www.mageplaza.com/)
+ * @license     https://www.mageplaza.com/LICENSE.txt
+ */
+
+/** @var \Mageplaza\Blog\Block\Sidebar\MostView $block */
+?>
+<?php
+$posts       = $block->getMostViewPosts();
+$postsRecent = $block->getRecentPost();
+?>
+<div class="mp-sidebar product info detailed">
+    <div class="product data items" data-mage-init='{"tabs":{"openedState":"active"}}'>
+        <div class="data item title" data-role="collapsible" id="tab-label-popular">
+            <a class="data switch" tabindex="-1" data-toggle="switch" id="tab-label-popular-title">
+                <div><?php echo __('Popular') ?></div>
+            </a>
+        </div>
+        <div class="data item content" id="tab-content-popular" data-role="content">
+            <?php if ($posts->getSize()): ?>
+                <?php foreach ($posts as $post): ?>
+                    <div class="list-post-tabs">
+                        <div class="post-left">
+                            <a href="<?php echo $post->getUrl() ?>">
+                                <img class="img-responsive" src="<?php echo $block->resizeImage($post->getImage(), '100x'); ?>">
+                            </a>
+                        </div>
+                        <div class="post-right">
+                            <a href="<?php echo $post->getUrl() ?>"><span><?php echo $post->getName() ?></span></a>
+                            <span class="create-at">
+                                <?php echo $post->getPublishDate() ? $block->getDateFormat($post->getPublishDate()) : ''; ?>
+                            </span>
+                        </div>
+                        <div class="mp-clear"></div>
+                    </div>
+                <?php endforeach; ?>
+            <?php else: ?>
+                <div class="mostview-nopost"><?php echo __('No Posts'); ?></div>
+            <?php endif; ?>
+        </div>
+
+        <div class="data item title" data-role="collapsible" id="tab-label-mostview">
+            <a class="data switch" tabindex="-1" data-toggle="switch" id="tab-label-mostview-title">
+                <div><?php echo __('Latest') ?></div>
+            </a>
+        </div>
+        <div class="data item content" id="tab-content-mostview" data-role="content">
+            <?php if ($postsRecent->getSize()): ?>
+                <?php foreach ($postsRecent as $post): ?>
+                    <div class="list-post-tabs" href="<?php echo $post->getUrl() ?>">
+                        <div class="post-left">
+                            <a href="<?php echo $post->getUrl() ?>">
+                                <img class="img-responsive" src="<?php echo $block->resizeImage($post->getImage(), '100x') ?>">
+                            </a>
+                        </div>
+                        <div class="post-right">
+                            <a href="<?php echo $post->getUrl() ?>"><span><?php echo $post->getName() ?></span></a>
+                            <span class="create-at">
+                                <?php echo $post->getPublishDate() ? $block->getDateFormat($post->getPublishDate()) : ''; ?>
+                            </span>
+                        </div>
+                        <div class="mp-clear"></div>
+                    </div>
+                <?php endforeach; ?>
+            <?php else: ?>
+                <div class="mostview-nopost"><?php echo __('No Posts'); ?></div>
+            <?php endif; ?>
+        </div>
+    </div>
+</div>
+<script>
+require([
+    'jquery'
+], function ($) {
+    $("#popular-tab").click(function () {
+        $("#tab-1").addClass('active');
+        $("#tab-2").removeClass('active');
+        $('#mostview').show();
+        $('#mostrecent').hide();
+    });
+    $("#recent-tab").click(function () {
+        $("#tab-1").removeClass('active');
+        $("#tab-2").addClass('active');
+        $('#mostview').hide();
+        $('#mostrecent').show();
+    });
+});
+</script>

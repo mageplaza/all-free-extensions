@@ -1,0 +1,98 @@
+/**
+ * Mageplaza
+ *
+ * NOTICE OF LICENSE
+ *
+ * This source file is subject to the Mageplaza.com license that is
+ * available through the world-wide-web at this URL:
+ * https://www.mageplaza.com/LICENSE.txt
+ *
+ * DISCLAIMER
+ *
+ * Do not edit or add to this file if you wish to upgrade this extension to newer
+ * version in the future.
+ *
+ * @category    Mageplaza
+ * @package     Mageplaza_Security
+ * @copyright   Copyright (c) Mageplaza (https://www.mageplaza.com/)
+ * @license     https://www.mageplaza.com/LICENSE.txt
+ */
+
+.box {
+    position: relative;
+    border-radius: 3px;
+    background: #ffffff;
+    border: 1px solid #ddd;
+    border-top: 3px solid #d2d6de;
+    margin-bottom: 20px;
+    width: 70%;
+    box-shadow: 0 1px 1px rgba(0, 0, 0, 0.1);
+}
+
+.box.box-green {
+    border-top-color: #00a65a;
+}
+
+.box.box-yellow {
+    border-top-color: yellow;
+}
+
+.box.box-red {
+    border-top-color: red;
+}
+
+.fa-remove {
+    color: red;
+}
+
+.fa-check {
+    color: green;
+}
+
+.box-header.with-border {
+    border-bottom: 1px solid #f4f4f4;
+}
+
+.box-header {
+    color: #444;
+    display: block;
+    padding: 10px;
+    position: relative;
+}
+
+.err-nof {
+    margin: 20px;
+}
+
+.checklist-notification, .db-notice, .username-notice {
+    background-color: #fefbbb;
+    margin: 20px;
+    padding: 10px;
+}
+
+.db-notice {
+    margin-left: 0;
+}
+
+.fix-it {
+    cursor: pointer;
+}
+
+#prefix-form {
+    display: none;
+    padding-left: 20px;
+}
+
+.db-notice:before,
+.username-notice:before {
+    color: #eb5202;
+    content: '\e61a';
+    font-family: 'Admin Icons';
+    position: absolute;
+    margin-top: 10px;
+}
+
+.db-notice p,
+.username-notice p {
+    margin: 0 0 0 20px;
+}

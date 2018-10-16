@@ -1,0 +1,62 @@
+<?xml version="1.0"?>
+<!--
+/**
+ * Mageplaza
+ *
+ * NOTICE OF LICENSE
+ *
+ * This source file is subject to the Mageplaza.com license that is
+ * available through the world-wide-web at this URL:
+ * https://www.mageplaza.com/LICENSE.txt
+ *
+ * DISCLAIMER
+ *
+ * Do not edit or add to this file if you wish to upgrade this extension to newer
+ * version in the future.
+ *
+ * @category    Mageplaza
+ * @package     Mageplaza_Blog
+ * @copyright   Copyright (c) 2018 Mageplaza (http://www.mageplaza.com/)
+ * @license     https://www.mageplaza.com/LICENSE.txt
+ */
+-->
+
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:framework:ObjectManager/etc/config.xsd">
+    <!--Grid collection-->
+    <type name="Magento\Framework\View\Element\UiComponent\DataProvider\CollectionFactory">
+        <arguments>
+            <argument name="collections" xsi:type="array">
+                <item name="mageplaza_blog_post_listing_data_source" xsi:type="string">Mageplaza\Blog\Model\ResourceModel\Post\Grid\Collection</item>
+                <item name="mageplaza_blog_tag_listing_data_source" xsi:type="string">Mageplaza\Blog\Model\ResourceModel\Tag\Grid\Collection</item>
+                <item name="mageplaza_blog_topic_listing_data_source" xsi:type="string">Mageplaza\Blog\Model\ResourceModel\Topic\Grid\Collection</item>
+                <item name="mageplaza_blog_comment_listing_data_source" xsi:type="string">Mageplaza\Blog\Model\ResourceModel\Comment\Grid\Collection</item>
+            </argument>
+        </arguments>
+    </type>
+    <virtualType name="Mageplaza\Blog\Model\ResourceModel\Post\Grid\Collection" type="Magento\Framework\View\Element\UiComponent\DataProvider\SearchResult">
+        <arguments>
+            <argument name="mainTable" xsi:type="string">mageplaza_blog_post</argument>
+            <argument name="resourceModel" xsi:type="string">Mageplaza\Blog\Model\ResourceModel\Post</argument>
+        </arguments>
+    </virtualType>
+    <virtualType name="Mageplaza\Blog\Model\ResourceModel\Tag\Grid\Collection" type="Magento\Framework\View\Element\UiComponent\DataProvider\SearchResult">
+        <arguments>
+            <argument name="mainTable" xsi:type="string">mageplaza_blog_tag</argument>
+            <argument name="resourceModel" xsi:type="string">Mageplaza\Blog\Model\ResourceModel\Tag</argument>
+        </arguments>
+    </virtualType>
+    <virtualType name="Mageplaza\Blog\Model\ResourceModel\Topic\Grid\Collection" type="Magento\Framework\View\Element\UiComponent\DataProvider\SearchResult">
+        <arguments>
+            <argument name="mainTable" xsi:type="string">mageplaza_blog_topic</argument>
+            <argument name="resourceModel" xsi:type="string">Mageplaza\Blog\Model\ResourceModel\Topic</argument>
+        </arguments>
+    </virtualType>
+    <type name="Magento\Framework\App\Rss\RssManagerInterface">
+        <arguments>
+            <argument name="dataProviders" xsi:type="array">
+                <item name="blog_posts" xsi:type="string">Mageplaza\Blog\Block\Post\Rss\Lists</item>
+            </argument>
+        </arguments>
+    </type>
+	<preference for="Magento\Sitemap\Model\Sitemap" type="Mageplaza\Blog\Model\Sitemap"/>
+</config>

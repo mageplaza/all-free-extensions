@@ -1,0 +1,70 @@
+<?xml version="1.0"?>
+<!--
+/**
+ * Mageplaza
+ *
+ * NOTICE OF LICENSE
+ *
+ * This source file is subject to the Mageplaza.com license that is
+ * available through the world-wide-web at this URL:
+ * https://www.mageplaza.com/LICENSE.txt
+ *
+ * DISCLAIMER
+ *
+ * Do not edit or add to this file if you wish to upgrade this extension to newer
+ * version in the future.
+ *
+ * @category    Mageplaza
+ * @package     Mageplaza_SocialLogin
+ * @copyright   Copyright (c) Mageplaza (http://www.mageplaza.com/)
+ * @license     https://www.mageplaza.com/LICENSE.txt
+ */
+-->
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Store:etc/config.xsd">
+    <default>
+        <sociallogin>
+            <module>
+                <type>1</type>
+            </module>
+            <general>
+                <enabled>1</enabled>
+                <link_trigger>.header .links, .section-item-content .header.links</link_trigger>
+                <send_password>0</send_password>
+                <social_display>1,2,3</social_display>
+                <popup_login>1</popup_login>
+                <popup_effect>mfp-move-from-top</popup_effect>
+                <style_management>#3399cc</style_management>
+            </general>
+            <facebook>
+                <sort_order>100</sort_order>
+            </facebook>
+            <google>
+                <sort_order>200</sort_order>
+            </google>
+            <amazon>
+                <sort_order>300</sort_order>
+            </amazon>
+            <twitter>
+                <sort_order>400</sort_order>
+            </twitter>
+            <linkedin>
+                <sort_order>500</sort_order>
+            </linkedin>
+            <yahoo>
+                <sort_order>600</sort_order>
+            </yahoo>
+            <foursquare>
+                <sort_order>700</sort_order>
+            </foursquare>
+            <instagram>
+                <sort_order>800</sort_order>
+            </instagram>
+            <vkontakte>
+                <sort_order>900</sort_order>
+            </vkontakte>
+            <github>
+                <sort_order>1000</sort_order>
+            </github>
+        </sociallogin>
+    </default>
+</config>

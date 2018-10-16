@@ -1,0 +1,98 @@
+<!--
+/**
+ * Mageplaza
+ *
+ * NOTICE OF LICENSE
+ *
+ * This source file is subject to the Mageplaza.com license that is
+ * available through the world-wide-web at this URL:
+ * https://mageplaza.com/LICENSE.txt
+ *
+ * DISCLAIMER
+ *
+ * Do not edit or add to this file if you wish to upgrade this extension to newer
+ * version in the future.
+ *
+ * @category    Mageplaza
+ * @package     Mageplaza_Security
+ * @copyright   Copyright (c) Mageplaza (https://www.mageplaza.com/)
+ * @license     http://mageplaza.com/LICENSE.txt
+ */
+-->
+
+<!--@subject {{trans "%store_url - Lock User Alert by Mageplaza" store_url=$store_url}} @-->
+<!--@vars {
+"var viewLogUrl":"View Log Page Url",
+"var logo_height":"Email Logo Image Height",
+"var logo_width":"Email Logo Image Width",
+"var template_styles|raw":"Template CSS",
+"var store.getFrontendName()":"Store Name"
+} @-->
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <meta name="viewport" content="initial-scale=1.0, width=device-width"/>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+    <style type="text/css">
+        {{var template_styles|raw}}
+
+        {{css file = "css/email.css"}}
+    </style>
+</head>
+<body>
+{{inlinecss file="css/email-inline.css"}}
+<table class="wrapper" width="100%">
+    <tr>
+        <td class="wrapper-inner" align="center">
+            <table class="main" align="center">
+                <tr>
+                    <td class="header" style="background-color: #fff; border-bottom: #f5f5f5 solid">
+                        <a class="logo" href="">
+                            <img
+                                    {{if logo_width}} width="{{var logo_width}}" {{else}} width="180" {{/if}}
+                            {{if logo_height}} height="{{var logo_height}}" {{else}} height="52" {{/if}}
+                            src="{{var logo_url}}"
+                            alt="{{var logo_alt}}"
+                            border="0"
+                            />
+                        </a>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="main-content">
+                        <h1 style="text-align: center;font-weight: 500;">{{trans "Lock User Notification"}}</h1>
+
+                        <p>{{trans "User '%user_name' is locked due to many failed login attempts." user_name=$user_name}}</p>
+                        <p>{{trans "Mageplaza Security locked the above user(s) intermediately."}}</p>
+                        <br>
+                        <p>{{trans "If there is something wrong, you can reset locked"}}
+                            <a href="https://mageplaza.com/kb/how-to-reset-a-locked-admin-account-in-magento-2.html">
+                                {{trans "here"}}
+                            </a>
+                        </p>
+                        <br/>
+                        <table align="center" class="button">
+                            <tbody>
+                            <tr>
+                                <td style="background-color: #2aa9ff; padding: 5px;">
+                                    <a style="color: white" href={{var viewLogUrl|raw}}>{{trans "Review login logs"}}</a>
+                                </td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="footer" style="background-color: #fff; border-top: #f5f5f5 solid">
+                        <p>{{trans "You received this email as the security alerts are considered to be important to your store(s)."}}</p>
+                        <span>© 2018</span>
+                        <a href="https://www.mageplaza.com/?utm_source=Mageplaza_Security&utm_medium=email&utm_campaign=security-alert-email">Mageplaza</a>
+                    </td>
+                </tr>
+            </table>
+        </td>
+    </tr>
+</table>
+</body>

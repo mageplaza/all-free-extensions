@@ -1,0 +1,38 @@
+/**
+ * Mageplaza
+ *
+ * NOTICE OF LICENSE
+ *
+ * This source file is subject to the Mageplaza.com license that is
+ * available through the world-wide-web at this URL:
+ * https://www.mageplaza.com/LICENSE.txt
+ *
+ * DISCLAIMER
+ *
+ * Do not edit or add to this file if you wish to upgrade this extension to newer
+ * version in the future.
+ *
+ * @category    Mageplaza
+ * @package     Mageplaza_Security
+ * @copyright   Copyright (c) Mageplaza (https://www.mageplaza.com/)
+ * @license     https://www.mageplaza.com/LICENSE.txt
+ */
+
+td.col-id {
+    max-width: 616px;
+    word-break: break-all;
+}
+
+.data-grid td {
+    min-width: 20px;
+    max-width: 450px;
+    word-break: break-all;
+}
+
+.action-menu-item {
+    word-break: normal;
+}
+
+.admin__field-control.control {
+    margin-top: 7px;
+}

@@ -1,0 +1,73 @@
+<?xml version="1.0" ?>
+<!--
+/**
+ * Mageplaza
+ *
+ * NOTICE OF LICENSE
+ *
+ * This source file is subject to the Mageplaza.com license that is
+ * available through the world-wide-web at this URL:
+ * https://www.mageplaza.com/LICENSE.txt
+ *
+ * DISCLAIMER
+ *
+ * Do not edit or add to this file if you wish to upgrade this extension to newer
+ * version in the future.
+ *
+ * @category    Mageplaza
+ * @package     Mageplaza_Multiflatrates
+ * @copyright   Copyright (c) Mageplaza (http://www.mageplaza.com/)
+ * @license     https://www.mageplaza.com/LICENSE.txt
+ */
+-->
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Store:etc/config.xsd">
+	<default>
+		<carriers>
+			<flatrateone>
+				<model>Mageplaza\Multiflatrates\Model\Carrier\Flatrateone</model>
+				<active>0</active>
+				<title>Flatrateone</title>
+				<name>Flatrateone</name>
+				<price>0.00</price>
+				<specificerrmsg>This shipping method is not available. To use this shipping method, please contact us.</specificerrmsg>
+				<sallowspecific>0</sallowspecific>
+			</flatrateone>
+			<flatratetwo>
+				<model>Mageplaza\Multiflatrates\Model\Carrier\Flatratetwo</model>
+				<active>0</active>
+				<title>Flatratetwo</title>
+				<name>Flatratetwo</name>
+				<price>0.00</price>
+				<specificerrmsg>This shipping method is not available. To use this shipping method, please contact us.</specificerrmsg>
+				<sallowspecific>0</sallowspecific>
+			</flatratetwo>
+			<flatratethree>
+				<model>Mageplaza\Multiflatrates\Model\Carrier\Flatratethree</model>
+				<active>0</active>
+				<title>Flatratethree</title>
+				<name>Flatratethree</name>
+				<price>0.00</price>
+				<specificerrmsg>This shipping method is not available. To use this shipping method, please contact us.</specificerrmsg>
+				<sallowspecific>0</sallowspecific>
+			</flatratethree>
+			<flatratefour>
+				<model>Mageplaza\Multiflatrates\Model\Carrier\Flatratefour</model>
+				<active>0</active>
+				<title>Flatratefour</title>
+				<name>Flatratefour</name>
+				<price>0.00</price>
+				<specificerrmsg>This shipping method is not available. To use this shipping method, please contact us.</specificerrmsg>
+				<sallowspecific>0</sallowspecific>
+			</flatratefour>
+			<flatratefive>
+				<model>Mageplaza\Multiflatrates\Model\Carrier\Flatratefive</model>
+				<active>0</active>
+				<title>Flatratefive</title>
+				<name>Flatratefive</name>
+				<price>0.00</price>
+				<specificerrmsg>This shipping method is not available. To use this shipping method, please contact us.</specificerrmsg>
+				<sallowspecific>0</sallowspecific>
+			</flatratefive>
+		</carriers>
+	</default>
+</config>
