@@ -15,18 +15,16 @@
  *
  * @category    Mageplaza
  * @package     Mageplaza_Blog
- * @copyright   Copyright (c) 2016 Mageplaza (http://www.mageplaza.com/)
+ * @copyright   Copyright (c) 2018 Mageplaza (http://www.mageplaza.com/)
  * @license     https://www.mageplaza.com/LICENSE.txt
  */
+
 namespace Mageplaza\Blog\Block\Post;
 
-use Mageplaza\Blog\Block\Frontend;
-
-class Listpost extends Frontend
+/**
+ * Class Listpost
+ * @package Mageplaza\Blog\Block\Post
+ */
+class Listpost extends \Mageplaza\Blog\Block\Listpost
 {
-
-    public function checkRss()
-    {
-        return $this->helperData->getBlogUrl('post/rss');
-    }
 }

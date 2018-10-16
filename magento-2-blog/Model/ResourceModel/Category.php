@@ -15,51 +15,70 @@
  *
  * @category    Mageplaza
  * @package     Mageplaza_Blog
- * @copyright   Copyright (c) 2016 Mageplaza (http://www.mageplaza.com/)
+ * @copyright   Copyright (c) 2018 Mageplaza (http://www.mageplaza.com/)
  * @license     https://www.mageplaza.com/LICENSE.txt
  */
+
 namespace Mageplaza\Blog\Model\ResourceModel;
 
-class Category extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
+use Magento\Framework\Event\ManagerInterface;
+use Magento\Framework\Model\ResourceModel\Db\AbstractDb;
+use Magento\Framework\Model\ResourceModel\Db\Context;
+use Magento\Framework\Stdlib\DateTime\DateTime;
+use Mageplaza\Blog\Helper\Data;
+
+/**
+ * Class Category
+ * @package Mageplaza\Blog\Model\ResourceModel
+ */
+class Category extends AbstractDb
 {
     /**
      * Date model
      *
      * @var \Magento\Framework\Stdlib\DateTime\DateTime
      */
-	public $date;
+    public $date;
 
     /**
      * Event Manager
      *
      * @var \Magento\Framework\Event\ManagerInterface
      */
-	public $eventManager;
+    public $eventManager;
 
     /**
      * Post relation model
      *
      * @var string
      */
-	public $categoryPostTable;
-	public $helperData;
+    public $categoryPostTable;
+
     /**
-     * constructor
-     *
+     * @var \Mageplaza\Blog\Helper\Data
+     */
+    public $helperData;
+
+    /**
+     * Category constructor.
+     * @param \Mageplaza\Blog\Helper\Data $helperData
      * @param \Magento\Framework\Stdlib\DateTime\DateTime $date
      * @param \Magento\Framework\Event\ManagerInterface $eventManager
      * @param \Magento\Framework\Model\ResourceModel\Db\Context $context
      */
     public function __construct(
-		\Mageplaza\Blog\Helper\Data $helperData,
-        \Magento\Framework\Stdlib\DateTime\DateTime $date,
-        \Magento\Framework\Event\ManagerInterface $eventManager,
-        \Magento\Framework\Model\ResourceModel\Db\Context $context
-    ) {
-		$this->helperData = $helperData;
-        $this->date         = $date;
+        Context $context,
+        DateTime $date,
+        ManagerInterface $eventManager,
+        Data $helperData
+    )
+    {
+        $this->helperData = $helperData;
+        $this->date = $date;
         $this->eventManager = $eventManager;
+
         parent::__construct($context);
+
         $this->categoryPostTable = $this->getTable('mageplaza_blog_post_category');
     }
 
@@ -76,8 +95,9 @@ class Category extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
     /**
      * Retrieves Blog Category Name from DB by passed id.
      *
-     * @param string $id
-     * @return string|bool
+     * @param $id
+     * @return string
+     * @throws \Magento\Framework\Exception\LocalizedException
      */
     public function getCategoryNameById($id)
     {
@@ -86,13 +106,16 @@ class Category extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
             ->from($this->getMainTable(), 'name')
             ->where('category_id = :category_id');
         $binds = ['category_id' => (int)$id];
+
         return $adapter->fetchOne($select, $binds);
     }
+
     /**
-     * before save callback
+     * Before save call back
      *
-     * @param \Magento\Framework\Model\AbstractModel|\Mageplaza\Blog\Model\Category $object
+     * @param \Magento\Framework\Model\AbstractModel $object
      * @return $this
+     * @throws \Magento\Framework\Exception\LocalizedException
      */
     protected function _beforeSave(\Magento\Framework\Model\AbstractModel $object)
     {
@@ -102,6 +125,7 @@ class Category extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
         }
         /** @var \Mageplaza\Blog\Model\Category $object */
         parent::_beforeSave($object);
+
         if (!$object->getChildrenCount()) {
             $object->setChildrenCount(0);
         }
@@ -111,7 +135,7 @@ class Category extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
                 $object->setPosition($this->getMaxPosition($object->getPath()) + 1);
             }
             $path = explode('/', $object->getPath());
-            $level = count($path)  - ($object->getId() ? 1 : 0);
+            $level = count($path) - ($object->getId() ? 1 : 0);
             $toUpdateChild = array_diff($path, [$object->getId()]);
 
             if (!$object->hasPosition()) {
@@ -120,57 +144,37 @@ class Category extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
             if (!$object->hasLevel()) {
                 $object->setLevel($level);
             }
-            if (!$object->hasParentId() && $level && !$object->getInitialSetupFlag()) {
+            if (!$object->hasParentId() && $level) {
                 $object->setParentId($path[$level - 1]);
             }
-            if (!$object->getId() && !$object->getInitialSetupFlag()) {
+            if (!$object->getId()) {
                 $object->setPath($object->getPath() . '/');
             }
-            if (!$object->getInitialSetupFlag()) {
-                $this->getConnection()->update(
-                    $this->getMainTable(),
-                    ['children_count' => 'children_count+1'],
-                    ['category_id IN(?)' => $toUpdateChild]
-                );
-            }
-        }
-        //Check Url Key
-        if ($object->isObjectNew()) {
-            $count   = 0;
-            $objName = $object->getName();
-            if ($object->getUrlKey()) {
-                $urlKey = $object->getUrlKey();
-            } else {
-                $urlKey = $this->generateUrlKey($objName, $count);
-            }
-            while ($this->checkUrlKey($urlKey)) {
-                $count++;
-                $urlKey = $this->generateUrlKey($urlKey, $count);
-            }
-            $object->setUrlKey($urlKey);
-        } else {
-            $objectId = $object->getId();
-            $count    = 0;
-            $objName  = $object->getName();
-            if ($object->getUrlKey()) {
-                $urlKey = $object->getUrlKey();
-            } else {
-                $urlKey = $this->generateUrlKey($objName, $count);
-            }
-            while ($this->checkUrlKey($urlKey, $objectId)) {
-                $count++;
-                $urlKey = $this->generateUrlKey($urlKey, $count);
-            }
 
-            $object->setUrlKey($urlKey);
+            $this->getConnection()->update(
+                $this->getMainTable(),
+                ['children_count' => 'children_count+1'],
+                ['category_id IN(?)' => $toUpdateChild]
+            );
         }
+
+        if (is_array($object->getStoreIds())) {
+            $object->setStoreIds(implode(',', $object->getStoreIds()));
+        }
+
+        $object->setUrlKey(
+            $this->helperData->generateUrlKey($this, $object, $object->getUrlKey() ?: $object->getName())
+        );
+
         return $this;
     }
+
     /**
-     * after save callback
+     * After save call back
      *
-     * @param \Magento\Framework\Model\AbstractModel|\Mageplaza\Blog\Model\Category $object
+     * @param \Magento\Framework\Model\AbstractModel $object
      * @return $this
+     * @throws \Magento\Framework\Exception\LocalizedException
      */
     protected function _afterSave(\Magento\Framework\Model\AbstractModel $object)
     {
@@ -180,6 +184,7 @@ class Category extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
             $this->savePath($object);
         }
         $this->savePostRelation($object);
+
         return parent::_afterSave($object);
     }
 
@@ -206,16 +211,18 @@ class Category extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
         if (!$position) {
             $position = 0;
         }
+
         return $position;
     }
 
     /**
      * Update path field
      *
-     * @param \Mageplaza\Blog\Model\Category $object
+     * @param $object
      * @return $this
+     * @throws \Magento\Framework\Exception\LocalizedException
      */
-	public function savePath($object)
+    public function savePath($object)
     {
         if ($object->getId()) {
             $this->getConnection()->update(
@@ -225,12 +232,14 @@ class Category extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
             );
             $object->unsetData('path_ids');
         }
+
         return $this;
     }
 
     /**
-     * @param AbstractModel $object
+     * @param \Magento\Framework\Model\AbstractModel $object
      * @return $this
+     * @throws \Magento\Framework\Exception\LocalizedException
      */
     protected function _beforeDelete(\Magento\Framework\Model\AbstractModel $object)
     {
@@ -248,12 +257,14 @@ class Category extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
             $this->getConnection()->update($this->getMainTable(), $data, $where);
         }
         $this->deleteChildren($object);
+
         return $this;
     }
 
     /**
      * @param \Magento\Framework\DataObject $object
      * @return $this
+     * @throws \Magento\Framework\Exception\LocalizedException
      */
     public function deleteChildren(\Magento\Framework\DataObject $object)
     {
@@ -278,6 +289,7 @@ class Category extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
          * This data can be used in after delete event
          */
         $object->setDeletedChildrenIds($childrenIds);
+
         return $this;
     }
 
@@ -286,12 +298,14 @@ class Category extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
      * @param \Mageplaza\Blog\Model\Category $newParent
      * @param null $afterCategoryId
      * @return $this
+     * @throws \Magento\Framework\Exception\LocalizedException
      */
     public function changeParent(
         \Mageplaza\Blog\Model\Category $category,
         \Mageplaza\Blog\Model\Category $newParent,
         $afterCategoryId = null
-    ) {
+    )
+    {
         $childrenCount = $this->getChildrenCount($category->getId()) + 1;
         $table = $this->getMainTable();
         $adapter = $this->getConnection();
@@ -329,10 +343,10 @@ class Category extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
             $table,
             [
                 'path' => 'REPLACE(' . $pathField . ',' . $adapter->quote(
-                        	$category->getPath() . '/'
-                    		) . ', ' . $adapter->quote(
-                        	$newPath . '/'
-                    		) . ')',
+                        $category->getPath() . '/'
+                    ) . ', ' . $adapter->quote(
+                        $newPath . '/'
+                    ) . ')',
                 'level' => $levelFiled . ' + ' . $levelDisposition
             ],
             [$pathField . ' LIKE ?' => $category->getPath() . '/%']
@@ -359,14 +373,15 @@ class Category extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
      * @param \Mageplaza\Blog\Model\Category $category
      * @param \Mageplaza\Blog\Model\Category $newParent
      * @param $afterCategoryId
-     * @return int
+     * @return int|string
+     * @throws \Magento\Framework\Exception\LocalizedException
      */
     public function processPositions(
         \Mageplaza\Blog\Model\Category $category,
         \Mageplaza\Blog\Model\Category $newParent,
         $afterCategoryId
-    ) {
-    
+    )
+    {
         $table = $this->getMainTable();
         $adapter = $this->getConnection();
         $positionField = $adapter->quoteIdentifier('position');
@@ -399,6 +414,7 @@ class Category extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
     /**
      * @param $categoryId
      * @return string
+     * @throws \Magento\Framework\Exception\LocalizedException
      */
     public function getChildrenCount($categoryId)
     {
@@ -412,6 +428,7 @@ class Category extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
 
         return $this->getConnection()->fetchOne($select, $bind);
     }
+
     /**
      * @param \Mageplaza\Blog\Model\Category $category
      * @return array
@@ -422,10 +439,11 @@ class Category extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
             $this->categoryPostTable,
             ['post_id', 'position']
         )
-        ->where(
-            'category_id = :category_id'
-        );
+            ->where(
+                'category_id = :category_id'
+            );
         $bind = ['category_id' => (int)$category->getId()];
+
         return $this->getConnection()->fetchPairs($select, $bind);
     }
 
@@ -487,31 +505,54 @@ class Category extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
             $postIds = array_keys($insert + $delete + $update);
             $category->setAffectedPostIds($postIds);
         }
+
         return $this;
     }
-    public function generateUrlKey($name, $count)
-    {
-		return $this->helperData->generateUrlKey($name,$count);
-    }
 
-    public function checkUrlKey($url, $id = null)
+    /**
+     * Check category url key is exists
+     *
+     * @param $urlKey
+     * @return string
+     * @throws \Magento\Framework\Exception\LocalizedException
+     */
+    public function isDuplicateUrlKey($urlKey)
     {
         $adapter = $this->getConnection();
-        if ($id) {
-            $select            = $adapter->select()
-                ->from($this->getMainTable(), '*')
-                ->where('url_key = :url_key')
-                ->where('category_id != :category_id');
-            $binds['url_key']  = (string)$url;
-            $binds ['category_id'] = (int)$id;
-        } else {
-            $select = $adapter->select()
-                ->from($this->getMainTable(), '*')
-                ->where('url_key = :url_key');
-            $binds  = ['url_key' => (string)$url];
-        }
-        $result = $adapter->fetchOne($select, $binds);
+        $select = $adapter->select()
+            ->from($this->getMainTable(), 'category_id')
+            ->where('url_key = :url_key');
+        $binds = ['url_key' => $urlKey];
 
-        return $result;
+        return $adapter->fetchOne($select, $binds);
+    }
+
+    /**
+     * Check is imported category
+     *
+     * @param $importSource
+     * @param $oldId
+     * @return string
+     * @throws \Magento\Framework\Exception\LocalizedException
+     */
+    public function isImported($importSource, $oldId)
+    {
+        $adapter = $this->getConnection();
+        $select = $adapter->select()
+            ->from($this->getMainTable(), 'category_id')
+            ->where('import_source = :import_source');
+        $binds = ['import_source' => $importSource . '-' . $oldId];
+
+        return $adapter->fetchOne($select, $binds);
+    }
+
+    /**
+     * @param $importType
+     * @throws \Magento\Framework\Exception\LocalizedException
+     */
+    public function deleteImportItems($importType)
+    {
+        $adapter = $this->getConnection();
+        $adapter->delete($this->getMainTable(), "`import_source` LIKE '" . $importType . "%'");
     }
 }

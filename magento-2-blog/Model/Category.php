@@ -15,10 +15,20 @@
  *
  * @category    Mageplaza
  * @package     Mageplaza_Blog
- * @copyright   Copyright (c) 2016 Mageplaza (http://www.mageplaza.com/)
+ * @copyright   Copyright (c) 2018 Mageplaza (http://www.mageplaza.com/)
  * @license     https://www.mageplaza.com/LICENSE.txt
  */
+
 namespace Mageplaza\Blog\Model;
+
+use Magento\Framework\Data\Collection\AbstractDb;
+use Magento\Framework\Exception\LocalizedException;
+use Magento\Framework\Model\AbstractModel;
+use Magento\Framework\Model\Context;
+use Magento\Framework\Model\ResourceModel\AbstractResource;
+use Magento\Framework\Registry;
+use Mageplaza\Blog\Model\ResourceModel\Post\CollectionFactory;
+use Mageplaza\Blog\Model\ResourceModel\Category\CollectionFactory as CategoryCollectionFactory;
 
 /**
  * @method Category setName($name)
@@ -58,15 +68,8 @@ namespace Mageplaza\Blog\Model;
  * @method Category setAffectedPostIds(array $ids)
  * @method bool getAffectedPostIds()
  */
-class Category extends \Magento\Framework\Model\AbstractModel
+class Category extends AbstractModel
 {
-    /**
-     * Root of the Blog Category tree
-     *
-     * @var string
-     */
-    const TREE_ROOT_ID = 1;
-
     /**
      * Cache tag
      *
@@ -100,38 +103,45 @@ class Category extends \Magento\Framework\Model\AbstractModel
      *
      * @var \Mageplaza\Blog\Model\CategoryFactory
      */
-	public $categoryFactory;
+    public $categoryFactory;
 
     /**
      * Post Collection Factory
      *
      * @var \Mageplaza\Blog\Model\ResourceModel\Post\CollectionFactory
      */
-	public $postCollectionFactory;
+    public $postCollectionFactory;
 
     /**
-     * constructor
-     *
-     * @param \Mageplaza\Blog\Model\CategoryFactory $categoryFactory
-     * @param \Mageplaza\Blog\Model\ResourceModel\Post\CollectionFactory $postCollectionFactory
-     * @param \Magento\Framework\Model\Context $context
-     * @param \Magento\Framework\Registry $registry
-     * @param \Magento\Framework\Model\ResourceModel\AbstractResource $resource
-     * @param \Magento\Framework\Data\Collection\AbstractDb $resourceCollection
+     * @var CategoryCollectionFactory
+     */
+    public $categoryCollectionFactory;
+
+    /**
+     * Category constructor.
+     * @param Context $context
+     * @param Registry $registry
+     * @param CategoryFactory $categoryFactory
+     * @param CollectionFactory $postCollectionFactory
+     * @param CategoryCollectionFactory $categoryCollectionFactory
+     * @param AbstractResource|null $resource
+     * @param AbstractDb|null $resourceCollection
      * @param array $data
      */
     public function __construct(
-        \Mageplaza\Blog\Model\CategoryFactory $categoryFactory,
-        \Mageplaza\Blog\Model\ResourceModel\Post\CollectionFactory $postCollectionFactory,
-        \Magento\Framework\Model\Context $context,
-        \Magento\Framework\Registry $registry,
-        \Magento\Framework\Model\ResourceModel\AbstractResource $resource = null,
-        \Magento\Framework\Data\Collection\AbstractDb $resourceCollection = null,
+        Context $context,
+        Registry $registry,
+        CategoryFactory $categoryFactory,
+        CollectionFactory $postCollectionFactory,
+        CategoryCollectionFactory $categoryCollectionFactory,
+        AbstractResource $resource = null,
+        AbstractDb $resourceCollection = null,
         array $data = []
-    ) {
-    
-        $this->categoryFactory       = $categoryFactory;
+    )
+    {
+        $this->categoryFactory = $categoryFactory;
         $this->postCollectionFactory = $postCollectionFactory;
+        $this->categoryCollectionFactory = $categoryCollectionFactory;
         parent::__construct($context, $registry, $resource, $resourceCollection, $data);
     }
 
@@ -181,6 +191,7 @@ class Category extends \Magento\Framework\Model\AbstractModel
             $ids = explode('/', $this->getPath());
             $this->setData('path_ids', $ids);
         }
+
         return $ids;
     }
 
@@ -200,7 +211,7 @@ class Category extends \Magento\Framework\Model\AbstractModel
      * @param $parentId
      * @param $afterCategoryId
      * @return $this
-     * @throws \Magento\Framework\Exception\LocalizedException
+     * @throws LocalizedException
      * @throws \Exception
      */
     public function move($parentId, $afterCategoryId)
@@ -208,30 +219,24 @@ class Category extends \Magento\Framework\Model\AbstractModel
         try {
             $parent = $this->categoryFactory->create()->load($parentId);
         } catch (\Magento\Framework\Exception\NoSuchEntityException $e) {
-            throw new \Magento\Framework\Exception\LocalizedException(
-                __('Sorry, but we can\'t move the Blog Category 
-                because we can\'t find the new parent Blog Category you selected.'),
+            throw new LocalizedException(
+                __('Sorry, but we can\'t move the Blog Category because we can\'t find the new parent Blog Category you selected.'),
                 $e
             );
         }
 
         if (!$this->getId()) {
-            throw new \Magento\Framework\Exception\LocalizedException(
-                __('Sorry, but we can\'t move the Blog Category 
-                 because we can\'t find the new parent Blog Category you selected.')
+            throw new LocalizedException(
+                __('Sorry, but we can\'t move the Blog Category because we can\'t find the new parent Blog Category you selected.')
             );
         } elseif ($parent->getId() == $this->getId()) {
-            throw new \Magento\Framework\Exception\LocalizedException(
-                __(
-                    'We can\'t perform this Blog Category move operation 
-                     because the parent Blog Category matches the child Blog Category.'
-                )
+            throw new LocalizedException(
+                __('We can\'t perform this Blog Category move operation because the parent Blog Category matches the child Blog Category.')
             );
         }
 
         $this->setMovedCategoryId($this->getId());
         $oldParentId = $this->getParentId();
-        $oldParentIds = $this->getParentIds();
 
         $eventParams = [
             $this->_eventObject => $this,
@@ -259,6 +264,7 @@ class Category extends \Magento\Framework\Model\AbstractModel
 
         return $this;
     }
+
     /**
      * @return array|mixed
      */
@@ -272,6 +278,7 @@ class Category extends \Magento\Framework\Model\AbstractModel
             $array = $this->getResource()->getPostsPosition($this);
             $this->setData('posts_position', $array);
         }
+
         return $array;
     }
 
@@ -280,16 +287,16 @@ class Category extends \Magento\Framework\Model\AbstractModel
      */
     public function getSelectedPostsCollection()
     {
-        if ($this->postCollection === null) {
+        if (!$this->postCollection) {
             $collection = $this->postCollectionFactory->create();
             $collection->join(
-                'mageplaza_blog_post_category',
-                'main_table.post_id=mageplaza_blog_post_category.post_id 
-                AND mageplaza_blog_post_category.category_id='.$this->getId(),
+                ['cat' => $this->getResource()->getTable('mageplaza_blog_post_category')],
+                'main_table.post_id=cat.post_id AND cat.category_id=' . $this->getId(),
                 ['position']
             );
             $this->postCollection = $collection;
         }
+
         return $this->postCollection;
     }
 }

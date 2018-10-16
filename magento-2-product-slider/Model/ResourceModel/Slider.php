@@ -1,54 +1,57 @@
 <?php
 /**
- * Mageplaza_Productslider extension
- *                     NOTICE OF LICENSE
- * 
- *                     This source file is subject to the MIT License
- *                     that is bundled with this package in the file LICENSE.txt.
- *                     It is also available through the world-wide-web at this URL:
- *                     https://www.mageplaza.com/LICENSE.txt
- * 
- *                     @category  Mageplaza
- *                     @package   Mageplaza_Productslider
- *                     @copyright Copyright (c) 2016
- *                     @license   https://www.mageplaza.com/LICENSE.txt
+ * Mageplaza
+ *
+ * NOTICE OF LICENSE
+ *
+ * This source file is subject to the Mageplaza.com license that is
+ * available through the world-wide-web at this URL:
+ * https://www.mageplaza.com/LICENSE.txt
+ *
+ * DISCLAIMER
+ *
+ * Do not edit or add to this file if you wish to upgrade this extension to newer
+ * version in the future.
+ *
+ * @category    Mageplaza
+ * @package     Mageplaza_Productslider
+ * @copyright   Copyright (c) Mageplaza (https://www.mageplaza.com/)
+ * @license     https://www.mageplaza.com/LICENSE.txt
  */
+
 namespace Mageplaza\Productslider\Model\ResourceModel;
 
-class Slider extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
+use Magento\Framework\Model\ResourceModel\Db\AbstractDb;
+use Magento\Framework\Model\ResourceModel\Db\Context;
+use Mageplaza\Productslider\Helper\Data;
+
+/**
+ * Class Slider
+ * @package Mageplaza\Productslider\Model\ResourceModel
+ */
+class Slider extends AbstractDb
 {
     /**
-     * Date time handler
-     * 
-     * @var \Magento\Framework\Stdlib\DateTime
+     * @var Data
      */
-    protected $_dateTime;
+    protected $helper;
 
     /**
-     * Date model
-     * 
-     * @var \Magento\Framework\Stdlib\DateTime\DateTime
-     */
-    protected $_date;
-
-    /**
-     * constructor
-     * 
-     * @param \Magento\Framework\Stdlib\DateTime $dateTime
-     * @param \Magento\Framework\Stdlib\DateTime\DateTime $date
-     * @param \Magento\Framework\Model\ResourceModel\Db\Context $context
+     * Slider constructor.
+     * @param Context $context
+     * @param Data $helper
+     * @param null $connectionName
      */
     public function __construct(
-        \Magento\Framework\Stdlib\DateTime $dateTime,
-        \Magento\Framework\Stdlib\DateTime\DateTime $date,
-        \Magento\Framework\Model\ResourceModel\Db\Context $context
+        Context $context,
+        Data $helper,
+        $connectionName = null
     )
     {
-        $this->_dateTime = $dateTime;
-        $this->_date     = $date;
-        parent::__construct($context);
-    }
+        $this->helper = $helper;
 
+        parent::__construct($context, $connectionName);
+    }
 
     /**
      * Initialize resource model
@@ -61,36 +64,48 @@ class Slider extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
     }
 
     /**
-     * Retrieves Slider Name from DB by passed id.
-     *
-     * @param string $id
-     * @return string|bool
-     */
-    public function getSliderNameById($id)
-    {
-        $adapter = $this->getConnection();
-        $select = $adapter->select()
-            ->from($this->getMainTable(), 'name')
-            ->where('slider_id = :slider_id');
-        $binds = ['slider_id' => (int)$id];
-        return $adapter->fetchOne($select, $binds);
-    }
-    /**
-     * before save callback
-     *
-     * @param \Magento\Framework\Model\AbstractModel|\Mageplaza\Productslider\Model\Slider $object
-     * @return $this
+     * @inheritdoc
      */
     protected function _beforeSave(\Magento\Framework\Model\AbstractModel $object)
     {
-        $object->setUpdatedAt($this->_date->date());
-        if ($object->isObjectNew()) {
-            $object->setCreatedAt($this->_date->date());
+        $storeIds = $object->getStoreIds();
+        if (is_array($storeIds)) {
+            $object->setStoreIds(implode(',', $storeIds));
         }
-        foreach (['active_from'] as $field) {
-            $value = !$object->getData($field) ? null : $object->getData($field);
-            $object->setData($field, $this->_dateTime->formatDate($value));
+
+        $groupIds = $object->getCustomerGroupIds();
+        if (is_array($groupIds)) {
+            $object->setCustomerGroupIds(implode(',', $groupIds));
         }
+
+        $displayAddition = $object->getDisplayAdditional();
+        if (is_array($displayAddition)) {
+            $object->setDisplayAdditional(implode(',', $displayAddition));
+        }
+
+        $responsiveItems = $object->getResponsiveItems();
+        if ($responsiveItems && is_array($responsiveItems)) {
+            $object->setResponsiveItems($this->helper->serialize($responsiveItems));
+        } else {
+            $object->setResponsiveItems($this->helper->serialize([]));
+        }
+
         return parent::_beforeSave($object);
+    }
+
+    /**
+     * @inheritdoc
+     */
+    protected function _afterLoad(\Magento\Framework\Model\AbstractModel $object)
+    {
+        parent::_afterLoad($object);
+
+        if (!is_null($object->getResponsiveItems())) {
+            $object->setResponsiveItems($this->helper->unserialize($object->getResponsiveItems()));
+        } else {
+            $object->setResponsiveItems(null);
+        }
+
+        return $this;
     }
 }

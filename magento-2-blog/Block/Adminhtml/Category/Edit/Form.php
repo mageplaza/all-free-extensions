@@ -15,72 +15,81 @@
  *
  * @category    Mageplaza
  * @package     Mageplaza_Blog
- * @copyright   Copyright (c) 2016 Mageplaza (http://www.mageplaza.com/)
+ * @copyright   Copyright (c) 2018 Mageplaza (http://www.mageplaza.com/)
  * @license     https://www.mageplaza.com/LICENSE.txt
  */
+
 namespace Mageplaza\Blog\Block\Adminhtml\Category\Edit;
 
-class Form extends \Mageplaza\Blog\Block\Adminhtml\Category\AbstractCategory
+use Magento\Backend\Block\Template\Context;
+use Magento\Catalog\Block\Adminhtml\Category\AbstractCategory;
+use Magento\Catalog\Model\Category;
+use Magento\Catalog\Model\CategoryFactory;
+use Magento\Catalog\Model\ResourceModel\Category\Tree;
+use Magento\Framework\Json\EncoderInterface;
+use Magento\Framework\Registry;
+use Mageplaza\Blog\Model\CategoryFactory as BlogCategoryFactory;
+use Mageplaza\Blog\Model\ResourceModel\Category\Tree as BlogResourceTree;
+
+/**
+ * Class Form
+ * @package Mageplaza\Blog\Block\Adminhtml\Category\Edit
+ */
+class Form extends AbstractCategory
 {
     /**
-     * Additional buttons
-     *
-     * @var array
+     * @var array Additional buttons
      */
-	public $additionalButtons = [];
+    public $additionalButtons = [];
 
     /**
-     * Block template
-     *
-     * @var string
+     * @var string Block template
      */
     protected $_template = 'category/edit/form.phtml';
 
     /**
-     * JSON encoder
-     *
      * @var \Magento\Framework\Json\EncoderInterface
      */
-	public $jsonEncoder;
+    public $jsonEncoder;
 
     /**
-     * constructor
-     *
+     * Form constructor.
+     * @param Context $context
+     * @param Tree $categoryTree
+     * @param Registry $registry
+     * @param CategoryFactory $categoryFactory
+     * @param BlogResourceTree $blogCategoryTree
+     * @param BlogCategoryFactory $blogCategoryFactory
      * @param \Magento\Framework\Json\EncoderInterface $jsonEncoder
-     * @param \Magento\Framework\Registry $registry
-     * @param \Mageplaza\Blog\Model\ResourceModel\Category\Tree $categoryTree
-     * @param \Mageplaza\Blog\Model\CategoryFactory $categoryFactory
-     * @param \Mageplaza\Blog\Model\ResourceModel\Category\CollectionFactory $categoryCollectionFactory
-     * @param \Magento\Backend\Block\Widget\Context $context
      * @param array $data
      */
     public function __construct(
-        \Magento\Framework\Json\EncoderInterface $jsonEncoder,
-        \Magento\Framework\Registry $registry,
-        \Mageplaza\Blog\Model\ResourceModel\Category\Tree $categoryTree,
-        \Mageplaza\Blog\Model\CategoryFactory $categoryFactory,
-        \Mageplaza\Blog\Model\ResourceModel\Category\CollectionFactory $categoryCollectionFactory,
-        \Magento\Backend\Block\Widget\Context $context,
+        Context $context,
+        Tree $categoryTree,
+        Registry $registry,
+        CategoryFactory $categoryFactory,
+        BlogResourceTree $blogCategoryTree,
+        BlogCategoryFactory $blogCategoryFactory,
+        EncoderInterface $jsonEncoder,
         array $data = []
-    ) {
-    
+    )
+    {
+        parent::__construct($context, $categoryTree, $registry, $categoryFactory, $data);
+
         $this->jsonEncoder = $jsonEncoder;
-        parent::__construct($registry, $categoryTree, $categoryFactory, $categoryCollectionFactory, $context, $data);
+        $this->_categoryTree = $blogCategoryTree;
+        $this->_categoryFactory = $blogCategoryFactory;
     }
 
     /**
-     * @return $this
+     * @inheritdoc
      */
     protected function _prepareLayout()
     {
-        $category   = $this->getCategory();
-        $categoryId = (int)$category->getId();
-        // 0 when we create Blog Category, otherwise some value for editing Blog Category
+        $category = $this->getCategory();
+        $categoryId = (int)$category->getId(); // 0 when we create Blog Category, otherwise some value for editing Blog Category
 
-        $this->setChild(
-            'tabs',
-            $this->getLayout()->createBlock('Mageplaza\Blog\Block\Adminhtml\Category\Edit\Tabs', 'tabs')
-        );
+        $this->setChild('tabs', $this->getLayout()->createBlock('Mageplaza\Blog\Block\Adminhtml\Category\Edit\Tabs', 'tabs'));
 
         // Save button
         $this->addButton(
@@ -108,9 +117,9 @@ class Form extends \Mageplaza\Blog\Block\Adminhtml\Category\AbstractCategory
                     'id' => 'delete',
                     'label' => __('Delete Category'),
                     'onclick' => "categoryDelete('" . $this->getUrl(
-                        'mageplaza_blog/*/delete',
-                        ['_current' => true]
-                    ) . "')",
+                            'mageplaza_blog/*/delete',
+                            ['_current' => true]
+                        ) . "')",
                     'class' => 'delete'
                 ]
             );
@@ -142,15 +151,43 @@ class Form extends \Mageplaza\Blog\Block\Adminhtml\Category\AbstractCategory
         foreach ($this->additionalButtons as $childName) {
             $html .= $this->getChildHtml($childName);
         }
+
         return $html;
     }
 
     /**
-     * Add additional button
-     *
-     * @param string $alias
-     * @param array $config
+     * @return mixed
+     */
+    public function isAjax()
+    {
+        return $this->getRequest()->isAjax();
+    }
+
+    /**
+     * @param array $args
+     * @return string
+     */
+    public function getSaveUrl(array $args = [])
+    {
+        $params = ['_current' => false, '_query' => false];
+        $params = array_merge($params, $args);
+
+        return $this->getUrl('mageplaza_blog/*/save', $params);
+    }
+
+    /**
+     * @return string
+     */
+    public function getEditUrl()
+    {
+        return $this->getUrl('mageplaza_blog/category/edit', ['_query' => false, 'id' => null, 'parent' => null]);
+    }
+
+    /**
+     * @param $alias
+     * @param $config
      * @return $this
+     * @throws \Magento\Framework\Exception\LocalizedException
      */
     public function addAdditionalButton($alias, $config)
     {
@@ -203,7 +240,7 @@ class Form extends \Mageplaza\Blog\Block\Adminhtml\Category\AbstractCategory
             return $this->getCategoryName();
         } else {
             $parentId = (int)$this->getRequest()->getParam('parent');
-            if ($parentId && $parentId != \Mageplaza\Blog\Model\Category::TREE_ROOT_ID) {
+            if ($parentId && $parentId != Category::TREE_ROOT_ID) {
                 return __('New Child Category');
             } else {
                 return __('New Root Category');
@@ -219,6 +256,7 @@ class Form extends \Mageplaza\Blog\Block\Adminhtml\Category\AbstractCategory
     {
         $params = ['_current' => true];
         $params = array_merge($params, $args);
+
         return $this->getUrl('mageplaza_blog/*/delete', $params);
     }
 
@@ -232,15 +270,8 @@ class Form extends \Mageplaza\Blog\Block\Adminhtml\Category\AbstractCategory
     {
         $params = ['_current' => true];
         $params = array_merge($params, $args);
-        return $this->getUrl('mageplaza_blog/*/refreshPath', $params);
-    }
 
-    /**
-     * @return bool
-     */
-    public function isAjax()
-    {
-        return $this->_request->isXmlHttpRequest() || $this->_request->getParam('isAjax');
+        return $this->getUrl('mageplaza_blog/*/refreshPath', $params);
     }
 
     /**
@@ -260,15 +291,13 @@ class Form extends \Mageplaza\Blog\Block\Adminhtml\Category\AbstractCategory
      */
     public function getCategoryId()
     {
-        return (int)$this->templateContext->getRequest()->getParam('category_id');
+        return (int)$this->templateContext->getRequest()->getParam('id');
     }
 
     /**
-     * Add button block as a child block or to global Page Toolbar block if available
-     *
-     * @param string $buttonId
+     * @param $buttonId
      * @param array $data
-     * @return $this
+     * @throws \Magento\Framework\Exception\LocalizedException
      */
     public function addButton($buttonId, array $data)
     {
@@ -285,6 +314,7 @@ class Form extends \Mageplaza\Blog\Block\Adminhtml\Category\AbstractCategory
 
     /**
      * @return bool
+     * @throws \Magento\Framework\Exception\LocalizedException
      */
     public function hasToolbarBlock()
     {
@@ -292,17 +322,17 @@ class Form extends \Mageplaza\Blog\Block\Adminhtml\Category\AbstractCategory
     }
 
     /**
-     * Adding child block with specified child's id.
-     *
-     * @param string $childId
-     * @param null|string $blockClassName
-     * @return \Magento\Backend\Block\Widget
+     * @param $childId
+     * @param null $blockClassName
+     * @return \Magento\Framework\View\Element\BlockInterface
+     * @throws \Magento\Framework\Exception\LocalizedException
      */
     public function getButtonChildBlock($childId, $blockClassName = null)
     {
         if (null === $blockClassName) {
             $blockClassName = 'Magento\Backend\Block\Widget\Button';
         }
+
         return $this->getLayout()->createBlock($blockClassName, $this->getNameInLayout() . '-' . $childId);
     }
 
@@ -315,6 +345,7 @@ class Form extends \Mageplaza\Blog\Block\Adminhtml\Category\AbstractCategory
         if (!empty($posts)) {
             return $this->jsonEncoder->encode($posts);
         }
+
         return '{}';
     }
 }

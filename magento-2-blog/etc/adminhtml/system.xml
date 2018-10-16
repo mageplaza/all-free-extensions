@@ -16,7 +16,7 @@
  *
  * @category    Mageplaza
  * @package     Mageplaza_Blog
- * @copyright   Copyright (c) 2016 Mageplaza (http://www.mageplaza.com/)
+ * @copyright   Copyright (c) 2018 Mageplaza (http://www.mageplaza.com/)
  * @license     https://www.mageplaza.com/LICENSE.txt
  */
 -->
@@ -30,7 +30,14 @@
             <group id="general" translate="label" type="text" sortOrder="1" showInDefault="1" showInWebsite="1" showInStore="1">
                 <label>General</label>
                 <field id="head" translate="label" type="button" sortOrder="1" showInDefault="1" showInWebsite="1" showInStore="1">
-                    <frontend_model>Mageplaza\Blog\Block\Adminhtml\System\Config\Head</frontend_model>
+                    <frontend_model>Mageplaza\Core\Block\Adminhtml\System\Config\Head</frontend_model>
+                    <comment><![CDATA[
+                        <ul class="mageplaza-head">
+                            <li><a href="https://docs.mageplaza.com/blog-m2/" target="_blank">User Guide</a>    </li>
+                            <li><a href="https://github.com/mageplaza/magento-2-blog/issues" target="_blank">Technical Support</a> </li>
+                            <li><strong><a href="https://www.mageplaza.com/?utm_source=store&utm_medium=documents&utm_campaign=m2-blog" target="_blank">Find more extensions</a></strong> </li>
+                        </ul>
+                        ]]></comment>
                 </field>
                 <field id="enabled" translate="label comment" type="select" sortOrder="2" showInDefault="1" showInWebsite="1" showInStore="1">
                     <label>Enable</label>
@@ -47,47 +54,78 @@
                     <label>Url Suffix</label>
                     <comment>Leave empty for no suffix. Default: .html</comment>
                 </field>
-                <field id="toplinks" translate="label comment" type="select" sortOrder="20" showInDefault="20"
-                       showInWebsite="1" showInStore="1">
+                <field id="toplinks" translate="label comment" type="select" sortOrder="20" showInDefault="1" showInWebsite="1" showInStore="1">
                     <label>Show Blog Link in Top Menu</label>
                     <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
                 </field>
-                <field id="footer" translate="label comment" type="select" sortOrder="25" showInDefault="20" showInWebsite="1" showInStore="1">
+                <field id="footer" translate="label comment" type="select" sortOrder="25" showInDefault="1" showInWebsite="1" showInStore="1">
                     <label>Show Blog Link in Footer links</label>
                     <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
                 </field>
-
-                <field id="related_post" translate="label comment" type="text" sortOrder="35" showInDefault="1" showInStore="1" showInWebsite="1">
-                    <label>Limit related post</label>
-                    <comment>Number of related post in post view page</comment>
-                </field>
-                <field id="display_style" translate="label comment" type="select" sortOrder="40" showInDefault="1" showInStore="1" showInWebsite="1">
-                    <label>Display blogs style</label>
-                    <source_model>Mageplaza\Blog\Model\Config\Source\Blogview\Display</source_model>
-                    <comment>Grid view style is better</comment>
-                </field>
-                <field id="display_author" translate="label comment" type="select" sortOrder="50" showInDefault="20"
-                       showInWebsite="1" showInStore="1">
+                <field id="display_author" translate="label comment" type="select" sortOrder="30" showInDefault="1" showInWebsite="1" showInStore="1">
                     <label>Display author</label>
                     <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
                 </field>
-                <field id="display_sitemap" translate="label comment" type="select" sortOrder="55" showInDefault="20"
-                       showInWebsite="1" showInStore="1">
+                <field id="display_sitemap" translate="label comment" type="select" sortOrder="35" showInDefault="1" showInWebsite="1" showInStore="1">
                     <label>Display sitemap</label>
                     <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
                 </field>
-                <field id="date_type" translate="label" type="select" sortOrder="57" showInDefault="1" showInWebsite="1" showInStore="1">
-                    <label>Type of Datetime</label>
+                <field id="date_type" translate="label" type="select" sortOrder="40" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Date format</label>
                     <source_model>Mageplaza\Blog\Model\Config\Source\DateFormat\Type</source_model>
                 </field>
-                <field id="font_color" translate="label comment" type="text" sortOrder="60" showInWebsite="1" showInStore="1" showInDefault="1">
+                <field id="related_post" translate="label comment" type="text" sortOrder="45" showInDefault="1" showInStore="1" showInWebsite="1">
+                    <label>Limit related post</label>
+                    <comment>Number of related post in post view page</comment>
+                </field>
+                <field id="display_style" translate="label comment" type="select" sortOrder="55" showInDefault="1" showInStore="1" showInWebsite="1">
+                    <label>Display Blogs Mode</label>
+                    <source_model>Mageplaza\Blog\Model\Config\Source\DisplayType</source_model>
+                </field>
+                <field id="pagination" translate="label comment" type="text" sortOrder="60" showInDefault="1" showInStore="1" showInWebsite="1">
+                    <label>Blogs per Page Allowed Values</label>
+                    <comment>Comma-separated.</comment>
+                </field>
+                <field id="font_color" translate="label comment" type="text" sortOrder="65" showInWebsite="1" showInStore="1" showInDefault="1">
                     <label>Choose blog's color</label>
                     <validate>jscolor {hash:true,refine:false}</validate>
                 </field>
-                <field id="pagination" translate="label comment" type="text" sortOrder="70" showInDefault="1" showInStore="1" showInWebsite="1">
-                    <label>Pagination</label>
-                    <comment>Number of post per page</comment>
-                </field>
+            </group>
+            <group id="product_post" translate="label" showInDefault="1" sortOrder="5" showInWebsite="1" showInStore="1">
+                <label>Related Products Content</label>
+                <group id="product_detail" translate="label" showInDefault="1" sortOrder="10" showInWebsite="1" showInStore="1">
+                    <label>Product Detail Page</label>
+                    <field id="enable_post" translate="label" type="select" sortOrder="10" showInDefault="1" showInWebsite="1" showInStore="1">
+                        <label>Enable Related Posts</label>
+                        <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                        <comment>Show/Hide related posts tab in product page</comment>
+                    </field>
+                    <field id="post_limit" translate="label" type="text" sortOrder="20" showInDefault="1" showInWebsite="1" showInStore="1">
+                        <label>Limit of Related Posts</label>
+                        <comment>Limit number of related posts in product page tab</comment>
+                    </field>
+                </group>
+                <group id="post_detail" translate="label" showInDefault="1" sortOrder="10" showInWebsite="1" showInStore="1">
+                    <label>Post View Page</label>
+                    <field id="enable_product" translate="label" type="select" sortOrder="10" showInDefault="1" showInWebsite="1" showInStore="1">
+                        <label>Enable Related Products</label>
+                        <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                        <comment><![CDATA[Show/Hide related products in post view page. Setup related products, up-sell, cross-sell products with ease, 
+                        <a href="https://www.mageplaza.com/magento-2-automatic-related-products/?utm_source=store&utm_medium=documents&utm_campaign=m2-blog" target="_blank">explore now</a>
+                        ]]>
+                            
+                        </comment>
+
+                    </field>
+                    <field id="product_limit" translate="label" type="text" sortOrder="20" showInDefault="1" showInWebsite="1" showInStore="1">
+                        <label>Limit of Related Products</label>
+                        <comment>Limit number of related products in post view page</comment>
+                    </field>
+                    <field id="title" translate="label" type="text" sortOrder="20" showInDefault="1" showInWebsite="1" showInStore="1">
+                        <label>Title of Related Products</label>
+                        <comment>Title of related products in post view page</comment>
+                    </field>
+                </group>
             </group>
             <group id="sidebar" translate="label" type="text" sortOrder="10" showInDefault="1" showInWebsite="1" showInStore="1">
                 <label>Sidebar</label>
@@ -106,6 +144,11 @@
                     <field id="enable_search" translate="label" type="select" sortOrder="10" showInDefault="1" showInWebsite="1" showInStore="1">
                         <label>Enable Search Box</label>
                         <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                        <comment><![CDATA[This feature is using Ajax Search technology, same as  
+                        <a href="https://www.mageplaza.com/magento-2-search-extension/?utm_source=store&utm_medium=documents&utm_campaign=m2-blog" target="_blank">Mageplaza Search</a>.
+                        ]]>
+                            
+                        </comment>
                     </field>
                     <field id="search_limit" translate="label" type="text" sortOrder="20" showInDefault="1" showInWebsite="1" showInStore="1">
                         <label>Maximum Query Result</label>
@@ -142,6 +185,12 @@
                     <label>Type of comment</label>
                     <source_model>Mageplaza\Blog\Model\Config\Source\Comments\Type</source_model>
                 </field>
+                <field id="need_approve" translate="label" type="select" sortOrder="10" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Need for Approval</label>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                    <comment>If yes, the comment will not be shown until approved by Admin.</comment>
+                    <depends><field id="type">1</field></depends>
+                </field>
                 <field id="disqus" translate="label" type="text" sortOrder="10" showInDefault="1" showInWebsite="1" showInStore="1">
                     <label>Disqus unique name</label>
                     <comment><![CDATA[Create at <a href="https://disqus.com/admin/create/" target="_blank">Disqus</a>]]></comment>
@@ -149,7 +198,7 @@
                 </field>
                 <field id="facebook_appid" translate="label" type="text" sortOrder="15" showInDefault="1" showInWebsite="1" showInStore="1">
                     <label>Facebook: AppID</label>
-                    <comment><![CDATA[Regiter AppID <a href="https://developers.facebook.com/apps/" target="_blank">here</a>]]></comment>
+                    <comment><![CDATA[Regiter AppID <a href="https://developers.facebook.com/apps/" target="_blank">here</a>. Let visitors login via Facebook account <a href="https://www.mageplaza.com/magento-2-social-login-extension/?utm_source=store&utm_medium=documents&utm_campaign=m2-blog" target="_blank">explore now</a>]]></comment>
                     <depends><field id="type">2</field></depends>
                 </field>
                 <field id="facebook_number_comment" translate="label" type="text" sortOrder="20" showInDefault="1" showInWebsite="1" showInStore="1">
@@ -173,13 +222,20 @@
             <group id="seo" translate="label" type="text" sortOrder="15" showInDefault="1" showInWebsite="1" showInStore="1">
                 <label>SEO</label>
                 <field id="meta_title" translate="label" type="text" sortOrder="1" showInDefault="1" showInWebsite="1" showInStore="1">
-                    <label>Meta title for posts list page</label>
+                    <label>Meta title</label>
+                    <comment><![CDATA[Fully compatible with  
+                    <a href="https://www.mageplaza.com/magento-2-seo-extension/?utm_source=store&utm_medium=documents&utm_campaign=m2-blog" target="_blank">Mageplaza SEO</a>.
+                    ]]></comment>
                 </field>
                 <field id="meta_description" translate="label" type="textarea" sortOrder="10" showInDefault="1" showInWebsite="1" showInStore="1">
-                    <label>Meta description for posts list page</label>
+                    <label>Meta description</label>
                 </field>
                 <field id="meta_keywords" translate="label" type="textarea" sortOrder="15" showInDefault="1" showInWebsite="1" showInStore="1">
-                    <label>Meta keywords for posts list page</label>
+                    <label>Meta keywords</label>
+                </field>
+                <field id="meta_robots" translate="label" type="select" sortOrder="20" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Meta robots</label>
+                    <source_model>Magento\Config\Model\Config\Source\Design\Robots</source_model>
                 </field>
                 <group id="snippet" translate="label" showInStore="1" showInWebsite="1" sortOrder="100" showInDefault="1">
                     <label>Article Snippet</label>
@@ -192,9 +248,10 @@
                     </field>
                     <field id="upload_image_id" translate="label comment" type="image" sortOrder="20" showInDefault="1" showInWebsite="1" showInStore="1">
                         <label>Logo</label>
-                        <comment>Choose your website or organize logo.</comment>
-                        <backend_model>Mageplaza\Blog\Model\Config\Source\Backend\Image</backend_model>
+                        <backend_model>Magento\Config\Model\Config\Backend\Image</backend_model>
+                        <upload_dir config="system/filesystem/media" scope_info="1">mageplaza/blog/logo</upload_dir>
                         <base_url type="media" scope_info="1">mageplaza/blog/logo</base_url>
+                        <comment><![CDATA[Choose your website or organize logo. (jpeg, gif, png)]]></comment>
                     </field>
                 </group>
             </group>
@@ -205,7 +262,7 @@
                     <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
                 </field>
                 <field id="pubid_id" translate="label" type="text" sortOrder="2" showInDefault="1" showInWebsite="1" showInStore="2">
-                    <label>Addthis.com Pubid Id</label>
+                    <label>Addthis.com PubId</label>
                 </field>
             </group>
         </section>

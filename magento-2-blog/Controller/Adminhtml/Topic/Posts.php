@@ -15,39 +15,48 @@
  *
  * @category    Mageplaza
  * @package     Mageplaza_Blog
- * @copyright   Copyright (c) 2016 Mageplaza (http://www.mageplaza.com/)
+ * @copyright   Copyright (c) 2018 Mageplaza (http://www.mageplaza.com/)
  * @license     https://www.mageplaza.com/LICENSE.txt
  */
+
 namespace Mageplaza\Blog\Controller\Adminhtml\Topic;
 
-class Posts extends \Mageplaza\Blog\Controller\Adminhtml\Topic
+use Magento\Backend\App\Action\Context;
+use Magento\Framework\Registry;
+use Magento\Framework\View\Result\LayoutFactory;
+use Mageplaza\Blog\Controller\Adminhtml\Topic;
+use Mageplaza\Blog\Model\TopicFactory;
+
+/**
+ * Class Posts
+ * @package Mageplaza\Blog\Controller\Adminhtml\Topic
+ */
+class Posts extends Topic
 {
     /**
      * Result layout factory
      *
      * @var \Magento\Framework\View\Result\LayoutFactory
      */
-	public $resultLayoutFactory;
+    public $resultLayoutFactory;
 
     /**
-     * constructor
-     *
+     * Posts constructor.
      * @param \Magento\Framework\View\Result\LayoutFactory $resultLayoutFactory
      * @param \Mageplaza\Blog\Model\TopicFactory $postFactory
      * @param \Magento\Framework\Registry $registry
-     * @param \Magento\Backend\Model\View\Result\RedirectFactory $resultRedirectFactory
      * @param \Magento\Backend\App\Action\Context $context
      */
     public function __construct(
-        \Magento\Framework\View\Result\LayoutFactory $resultLayoutFactory,
-        \Mageplaza\Blog\Model\TopicFactory $postFactory,
-        \Magento\Framework\Registry $registry,
-        \Magento\Backend\App\Action\Context $context
-    ) {
-    
+        Context $context,
+        Registry $registry,
+        LayoutFactory $resultLayoutFactory,
+        TopicFactory $postFactory
+    )
+    {
         $this->resultLayoutFactory = $resultLayoutFactory;
 
-        parent::__construct($postFactory, $registry, $context);
+        parent::__construct($context, $registry, $postFactory);
     }
 
     /**
@@ -55,13 +64,8 @@ class Posts extends \Mageplaza\Blog\Controller\Adminhtml\Topic
      */
     public function execute()
     {
-        $this->initTopic();
-        $resultLayout = $this->resultLayoutFactory->create();
-        /** @var \Mageplaza\Blog\Block\Adminhtml\Topic\Edit\Tab\Post $postsBlock */
-        $postsBlock = $resultLayout->getLayout()->getBlock('topic.edit.tab.post');
-        if ($postsBlock) {
-            $postsBlock->setTopicPosts($this->getRequest()->getPost('topic_posts', null));
-        }
-        return $resultLayout;
+        $this->initTopic(true);
+
+        return $this->resultLayoutFactory->create();
     }
 }

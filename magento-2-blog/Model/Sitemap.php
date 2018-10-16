@@ -1,146 +1,187 @@
 <?php
 /**
- * Created by PhpStorm.
- * User: Admin
- * Date: 4/10/2017
- * Time: 11:26 AM
+ * Mageplaza
+ *
+ * NOTICE OF LICENSE
+ *
+ * This source file is subject to the Mageplaza.com license that is
+ * available through the world-wide-web at this URL:
+ * https://www.mageplaza.com/LICENSE.txt
+ *
+ * DISCLAIMER
+ *
+ * Do not edit or add to this file if you wish to upgrade this extension to newer
+ * version in the future.
+ *
+ * @category    Mageplaza
+ * @package     Mageplaza_Blog
+ * @copyright   Copyright (c) 2018 Mageplaza (http://www.mageplaza.com/)
+ * @license     https://www.mageplaza.com/LICENSE.txt
  */
+
 namespace Mageplaza\Blog\Model;
 
-class Sitemap extends \Magento\Sitemap\Model\Sitemap{
-	protected $blogDataHelper;
-	protected $router;
-	public function __construct(
-		\Mageplaza\Blog\Helper\Data $blogDataHelper,
-		\Magento\Framework\Model\Context $context,
-		\Magento\Framework\Registry $registry, 
-		\Magento\Framework\Escaper $escaper, 
-		\Magento\Sitemap\Helper\Data $sitemapData, 
-		\Magento\Framework\Filesystem $filesystem, 
-		\Magento\Sitemap\Model\ResourceModel\Catalog\CategoryFactory $categoryFactory, 
-		\Magento\Sitemap\Model\ResourceModel\Catalog\ProductFactory $productFactory, 
-		\Magento\Sitemap\Model\ResourceModel\Cms\PageFactory $cmsFactory, 
-		\Magento\Framework\Stdlib\DateTime\DateTime $modelDate, 
-		\Magento\Store\Model\StoreManagerInterface $storeManager, 
-		\Magento\Framework\App\RequestInterface $request, 
-		\Magento\Framework\Stdlib\DateTime $dateTime, 
-		\Magento\Framework\Model\ResourceModel\AbstractResource $resource = null, 
-		\Magento\Framework\Data\Collection\AbstractDb $resourceCollection = null, array $data = []
-		)
-	{
-		$this->blogDataHelper=$blogDataHelper;
-		$this->router = $this->blogDataHelper->getBlogConfig('general/url_prefix');
-		parent::__construct(
-			$context, 
-			$registry, 
-			$escaper, 
-			$sitemapData, 
-			$filesystem, 
-			$categoryFactory, 
-			$productFactory, 
-			$cmsFactory, 
-			$modelDate, 
-			$storeManager, 
-			$request, 
-			$dateTime, 
-			$resource, 
-			$resourceCollection, 
-			$data
-			);
-	}
-	public function getBlogPostsSiteMapCollection(){
-		$postCollection=$this->blogDataHelper->postfactory->create()->getCollection();
-		$postSiteMapCollection=[];
-		if (!$this->router) {
-			$this->router = 'blog';
-		}
-		foreach ($postCollection as $item){
-			if ($item->getEnabled()!=null) :
-				$images = null;
-				if ($item->getImage()) :
-				$imagesCollection[] = new \Magento\Framework\DataObject(
-					[
-						'url' => 'mageplaza/blog/post/image'.$item->getImage(),
-						'caption' => null,
-					]
-				);
-					$images=new \Magento\Framework\DataObject(['collection'=>$imagesCollection]);
-					endif;
-			$postSiteMapCollection[$item->getId()]=new \Magento\Framework\DataObject([
-				'id'=>$item->getId(),
-				'url'=>$this->router.'/post/'.$item->getUrlKey(),
-				'images' => $images,
-				'updated_at'=>$item->getUpdatedAt(),
-			]);
-			endif;
-		}
-		return $postSiteMapCollection;
-	}
-	public function getBlogCategoriesSiteMapCollection(){
-		$categoryCollection=$this->blogDataHelper->categoryfactory->create()->getCollection();
-		$categorySiteMapCollection=[];
-		foreach ($categoryCollection as $item){
-			if ($item->getEnabled()!=null) :
-			$categorySiteMapCollection[$item->getId()]=new \Magento\Framework\DataObject([
-				'id'=>$item->getId(),
-				'url'=>$this->router.'/category/'.$item->getUrlKey(),
-				'updated_at'=>$item->getUpdatedAt(),
-			]);
-			endif;
-		}
-		return $categorySiteMapCollection;
-	}
-	public function getBlogTagsSiteMapCollection(){
-		$tagCollection=$this->blogDataHelper->tagfactory->create()->getCollection();
-		$tagSiteMapCollection=[];
-		foreach ($tagCollection as $item){
-			if ($item->getEnabled()!=null) :
-				$tagSiteMapCollection[$item->getId()]=new \Magento\Framework\DataObject([
-					'id'=>$item->getId(),
-					'url'=>$this->router.'/tag/'.$item->getUrlKey(),
-					'updated_at'=>$item->getUpdatedAt(),
-				]);
-			endif;
-		}
-		return $tagSiteMapCollection;
-	}
-	public function getBlogTopicsSiteMapCollection(){
-		$topicCollection=$this->blogDataHelper->topicfactory->create()->getCollection();
-		$topicSiteMapCollection=[];
-		foreach ($topicCollection as $item){
-			if ($item->getEnabled()!=null) :
-				$topicSiteMapCollection[$item->getId()]=new \Magento\Framework\DataObject([
-					'id'=>$item->getId(),
-					'url'=>$this->router.'/topic/'.$item->getUrlKey(),
-					'updated_at'=>$item->getUpdatedAt(),
-				]);
-			endif;
-		}
-		return $topicSiteMapCollection;
-	}
-	public function _initSitemapItems()
-	{
-		$this->_sitemapItems[] = new \Magento\Framework\DataObject(
-			[
-				'collection' => $this->getBlogPostsSiteMapCollection(),
-			]
-		);
-		$this->_sitemapItems[] = new \Magento\Framework\DataObject(
-			[
-				'collection' => $this->getBlogCategoriesSiteMapCollection(),
-			]
-		);
-		$this->_sitemapItems[] = new \Magento\Framework\DataObject(
-			[
-				'collection' => $this->getBlogTagsSiteMapCollection(),
-			]
-		);
-		$this->_sitemapItems[] = new \Magento\Framework\DataObject(
-			[
-				'collection' => $this->getBlogTopicsSiteMapCollection(),
-			]
-		);
-//		die(\Zend_Debug::dump($this->_sitemapItems));
-		parent::_initSitemapItems(); // TODO: Change the autogenerated stub
-	}
+use Magento\Framework\App\ObjectManager;
+use Magento\Framework\DataObject;
+use Mageplaza\Blog\Helper\Data;
+use Mageplaza\Blog\Helper\Image;
+
+/**
+ * Class Sitemap
+ * @package Mageplaza\Blog\Model
+ */
+class Sitemap extends \Magento\Sitemap\Model\Sitemap
+{
+    /**
+     * @var \Mageplaza\Blog\Helper\Data
+     */
+    protected $blogDataHelper;
+
+    /**
+     * @var \Mageplaza\Blog\Helper\Image
+     */
+    protected $imageHelper;
+
+    /**
+     * @var mixed
+     */
+    protected $router;
+
+    /**
+     * Initialize resource model
+     *
+     * @return void
+     */
+    protected function _construct()
+    {
+        parent::_construct();
+
+        $this->blogDataHelper = ObjectManager::getInstance()->get(Data::class);
+        $this->imageHelper = ObjectManager::getInstance()->get(Image::class);;
+        $this->router = $this->blogDataHelper->getBlogConfig('general/url_prefix');
+    }
+
+    /**
+     * @return array
+     */
+    public function getBlogPostsSiteMapCollection()
+    {
+        $urlSuffix = $this->blogDataHelper->getUrlSuffix();
+        $postCollection = $this->blogDataHelper->postFactory->create()->getCollection();
+        $postSiteMapCollection = [];
+        if (!$this->router) {
+            $this->router = 'blog';
+        }
+        foreach ($postCollection as $item) {
+            if (!is_null($item->getEnabled())) {
+                $images = null;
+                if ($item->getImage()) :
+                    $imageFile = $this->imageHelper->getMediaPath($item->getImage(), Image::TEMPLATE_MEDIA_TYPE_POST);
+
+                    $imagesCollection[] = new DataObject([
+                            'url' => $this->imageHelper->getMediaUrl($imageFile),
+                            'caption' => null,
+                        ]
+                    );
+                    $images = new DataObject(['collection' => $imagesCollection]);
+                endif;
+                $postSiteMapCollection[$item->getId()] = new DataObject([
+                    'id' => $item->getId(),
+                    'url' => $this->router . '/post/' . $item->getUrlKey() . $urlSuffix,
+                    'images' => $images,
+                    'updated_at' => $item->getUpdatedAt(),
+                ]);
+            }
+        }
+
+        return $postSiteMapCollection;
+    }
+
+    /**
+     * @return array
+     */
+    public function getBlogCategoriesSiteMapCollection()
+    {
+        $urlSuffix = $this->blogDataHelper->getUrlSuffix();
+        $categoryCollection = $this->blogDataHelper->categoryFactory->create()->getCollection();
+        $categorySiteMapCollection = [];
+        foreach ($categoryCollection as $item) {
+            if (!is_null($item->getEnabled())) {
+                $categorySiteMapCollection[$item->getId()] = new DataObject([
+                    'id' => $item->getId(),
+                    'url' => $this->router . '/category/' . $item->getUrlKey() . $urlSuffix,
+                    'updated_at' => $item->getUpdatedAt(),
+                ]);
+            }
+        }
+
+        return $categorySiteMapCollection;
+    }
+
+    /**
+     * @return array
+     */
+    public function getBlogTagsSiteMapCollection()
+    {
+        $urlSuffix = $this->blogDataHelper->getUrlSuffix();
+        $tagCollection = $this->blogDataHelper->tagFactory->create()->getCollection();
+        $tagSiteMapCollection = [];
+        foreach ($tagCollection as $item) {
+            if (!is_null($item->getEnabled())) {
+                $tagSiteMapCollection[$item->getId()] = new DataObject([
+                    'id' => $item->getId(),
+                    'url' => $this->router . '/tag/' . $item->getUrlKey() . $urlSuffix,
+                    'updated_at' => $item->getUpdatedAt(),
+                ]);
+            }
+        }
+
+        return $tagSiteMapCollection;
+    }
+
+    /**
+     * @return array
+     */
+    public function getBlogTopicsSiteMapCollection()
+    {
+        $urlSuffix = $this->blogDataHelper->getUrlSuffix();
+        $topicCollection = $this->blogDataHelper->topicFactory->create()->getCollection();
+        $topicSiteMapCollection = [];
+        foreach ($topicCollection as $item) {
+            if (!is_null($item->getEnabled())) {
+                $topicSiteMapCollection[$item->getId()] = new DataObject([
+                    'id' => $item->getId(),
+                    'url' => $this->router . '/topic/' . $item->getUrlKey() . $urlSuffix,
+                    'updated_at' => $item->getUpdatedAt(),
+                ]);
+            }
+        }
+
+        return $topicSiteMapCollection;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function _initSitemapItems()
+    {
+        $this->_sitemapItems[] = new DataObject([
+                'collection' => $this->getBlogPostsSiteMapCollection(),
+            ]
+        );
+        $this->_sitemapItems[] = new DataObject([
+                'collection' => $this->getBlogCategoriesSiteMapCollection(),
+            ]
+        );
+        $this->_sitemapItems[] = new DataObject([
+                'collection' => $this->getBlogTagsSiteMapCollection(),
+            ]
+        );
+        $this->_sitemapItems[] = new DataObject([
+                'collection' => $this->getBlogTopicsSiteMapCollection(),
+            ]
+        );
+
+        parent::_initSitemapItems(); // TODO: Change the autogenerated stub
+    }
 }

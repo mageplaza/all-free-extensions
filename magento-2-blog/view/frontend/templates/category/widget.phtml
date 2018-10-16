@@ -15,35 +15,24 @@
  *
  * @category    Mageplaza
  * @package     Mageplaza_Blog
- * @copyright   Copyright (c) 2016 Mageplaza (http://www.mageplaza.com/)
+ * @copyright   Copyright (c) 2018 Mageplaza (http://www.mageplaza.com/)
  * @license     https://www.mageplaza.com/LICENSE.txt
  */
-?>
-<?php
-$categories = $block->getCategoryList();
+
+$tree = $block->getTree();
+if($tree):
 ?>
 <div class="mp-sidebar mpcss">
-	<div class="row">
-		<div class="block-title col-xs-12 sidebar-categories">
-				<p class="block-mp-sidebar-heading" role="heading" aria-level="2"><?php echo __('Categories') ?></p>
-
-		</div>
-		<div class="col-xs-12">
-			<ul class="menu-categories">
-			<?php if ($categories != '' && count($categories) > 0): ?>
-
-			<?php foreach ($categories as $category): ?>
-                <li class="category-item" >
-                    <a class="list-categories" href="<?php echo $block->getCategoryUrl($category) ?>">
-                        <i class="fa fa-folder-open-o">&nbsp;&nbsp;</i><?php echo ucfirst($category->getName())?></a>
-                </li>
-
-			<?php endforeach; ?>
-
-			<?php else: ?>
-				<?php echo __('No Categories') ?>
-			<?php endif; ?>
-			</ul>
-		</div>
-	</div>
+    <div class="row">
+        <div class="block-title col-xs-12 sidebar-categories">
+            <p class="block-mp-sidebar-heading" role="heading" aria-label="2"><?php echo __('Categories') ?></p>
+        </div>
+        <div class="col-xs-12">
+                <?php echo $block->getCategoryTreeHtml($tree) ?>
+        </div>
+    </div>
 </div>
+<script type="text/javascript">
+    require(['Mageplaza_Blog/js/categorytree'], function () {});
+</script>
+<?php endif; ?>

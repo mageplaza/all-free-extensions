@@ -16,7 +16,7 @@
  *
  * @category    Mageplaza
  * @package     Mageplaza_Blog
- * @copyright   Copyright (c) 2016 Mageplaza (http://www.mageplaza.com/)
+ * @copyright   Copyright (c) 2018 Mageplaza (http://www.mageplaza.com/)
  * @license     https://www.mageplaza.com/LICENSE.txt
  */
 -->
@@ -29,12 +29,14 @@
                     <resource id="Mageplaza_Blog::tag" title="Tags" sortOrder="20"/>
                     <resource id="Mageplaza_Blog::topic" title="Topics" sortOrder="30"/>
                     <resource id="Mageplaza_Blog::category" title="Categories" sortOrder="40"/>
-                    <resource id="Mageplaza_Blog::author" title="Author Management" sortOrder="50"/>
+                    <resource id="Mageplaza_Blog::author" title="Author Information" sortOrder="50"/>
+                    <resource id="Mageplaza_Blog::comment" title="Manage Comments" sortOrder="60"/>
+                    <resource id="Mageplaza_Blog::import" title="Import" sortOrder="65"/>
                 </resource>
                 <resource id="Magento_Backend::stores">
                     <resource id="Magento_Backend::stores_settings">
                         <resource id="Magento_Config::config">
-                            <resource id="Mageplaza_Blog::configuration" title="Better Blog"/>
+                            <resource id="Mageplaza_Blog::configuration" title="Mageplaza Better Blog"/>
                         </resource>
                     </resource>
                 </resource>

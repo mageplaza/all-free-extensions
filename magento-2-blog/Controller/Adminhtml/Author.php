@@ -15,39 +15,72 @@
  *
  * @category    Mageplaza
  * @package     Mageplaza_Blog
- * @copyright   Copyright (c) 2016 Mageplaza (http://www.mageplaza.com/)
+ * @copyright   Copyright (c) 2018 Mageplaza (http://www.mageplaza.com/)
  * @license     https://www.mageplaza.com/LICENSE.txt
  */
+
 namespace Mageplaza\Blog\Controller\Adminhtml;
 
-abstract class Author extends \Magento\Backend\App\Action
+use Magento\Backend\App\Action;
+use Magento\Backend\App\Action\Context;
+use Magento\Framework\Registry;
+use Mageplaza\Blog\Model\AuthorFactory;
+
+/**
+ * Class Author
+ * @package Mageplaza\Blog\Controller\Adminhtml
+ */
+abstract class Author extends Action
 {
+    /** Authorization level of a basic admin session */
+    const ADMIN_RESOURCE = 'Mageplaza_Blog::author';
 
-	public $authorFactory;
+    /**
+     * @var Registry
+     */
+    public $coreRegistry;
 
+    /**
+     * @var AuthorFactory
+     */
+    public $authorFactory;
 
-	public $coreRegistry;
+    /**
+     * Author constructor.
+     * @param Context $context
+     * @param Registry $coreRegistry
+     * @param AuthorFactory $authorFactory
+     */
+    public function __construct(
+        Context $context,
+        Registry $coreRegistry,
+        AuthorFactory $authorFactory
+    )
+    {
+        $this->authorFactory = $authorFactory;
+        $this->coreRegistry = $coreRegistry;
 
+        parent::__construct($context);
+    }
 
-	public $resultRedirectFactory;
+    /**
+     * @return \Mageplaza\Blog\Model\Author
+     * @throws \Magento\Framework\Exception\LocalizedException
+     */
+    public function initAuthor()
+    {
+        $user = $this->_auth->getUser();
+        $userId = $user->getId();
 
-	public function __construct(
-		\Mageplaza\Blog\Model\AuthorFactory $authorFactory,
-		\Magento\Framework\Registry $coreRegistry,
-		\Magento\Backend\App\Action\Context $context
-	) {
+        /** @var \Mageplaza\Blog\Model\Author $author */
+        $author = $this->authorFactory->create()
+            ->load($userId);
 
-		$this->authorFactory         = $authorFactory;
-		$this->coreRegistry          = $coreRegistry;
-		$this->resultRedirectFactory = $context->getRedirect();
-		parent::__construct($context);
-	}
+        if (!$author->getId()) {
+            $author->setId($userId)
+                ->setName($user->getName());
+        }
 
-
-	public function initAuthor()
-	{
-		$author    = $this->authorFactory->create();
-		$this->coreRegistry->register('mageplaza_blog_author', $author);
-		return $author;
-	}
+        return $author;
+    }
 }

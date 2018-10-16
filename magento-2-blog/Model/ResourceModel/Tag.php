@@ -15,12 +15,23 @@
  *
  * @category    Mageplaza
  * @package     Mageplaza_Blog
- * @copyright   Copyright (c) 2016 Mageplaza (http://www.mageplaza.com/)
+ * @copyright   Copyright (c) 2018 Mageplaza (http://www.mageplaza.com/)
  * @license     https://www.mageplaza.com/LICENSE.txt
  */
+
 namespace Mageplaza\Blog\Model\ResourceModel;
 
-class Tag extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
+use Magento\Framework\Event\ManagerInterface;
+use Magento\Framework\Model\ResourceModel\Db\AbstractDb;
+use Magento\Framework\Model\ResourceModel\Db\Context;
+use Magento\Framework\Stdlib\DateTime\DateTime;
+use Mageplaza\Blog\Helper\Data;
+
+/**
+ * Class Tag
+ * @package Mageplaza\Blog\Model\ResourceModel
+ */
+class Tag extends AbstractDb
 {
     /**
      * Date model
@@ -34,32 +45,40 @@ class Tag extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
      *
      * @var \Magento\Framework\Event\ManagerInterface
      */
-	public $eventManager;
+    public $eventManager;
 
     /**
      * Post relation model
      *
      * @var string
      */
-	public $tagPostTable;
-	public $helperData;
+    public $tagPostTable;
+
     /**
-     * constructor
-     *
-     * @param \Magento\Framework\Stdlib\DateTime\DateTime $date
-     * @param \Magento\Framework\Event\ManagerInterface $eventManager
+     * @var \Mageplaza\Blog\Helper\Data
+     */
+    public $helperData;
+
+    /**
+     * Tag constructor.
      * @param \Magento\Framework\Model\ResourceModel\Db\Context $context
+     * @param \Magento\Framework\Event\ManagerInterface $eventManager
+     * @param \Magento\Framework\Stdlib\DateTime\DateTime $date
+     * @param \Mageplaza\Blog\Helper\Data $helperData
      */
     public function __construct(
-		\Mageplaza\Blog\Helper\Data $helperData,
-        \Magento\Framework\Stdlib\DateTime\DateTime $date,
-        \Magento\Framework\Event\ManagerInterface $eventManager,
-        \Magento\Framework\Model\ResourceModel\Db\Context $context
-    ) {
-		$this->helperData = $helperData;
-        $this->date         = $date;
+        Context $context,
+        ManagerInterface $eventManager,
+        DateTime $date,
+        Data $helperData
+    )
+    {
+        $this->helperData = $helperData;
+        $this->date = $date;
         $this->eventManager = $eventManager;
+
         parent::__construct($context);
+
         $this->tagPostTable = $this->getTable('mageplaza_blog_post_tag');
     }
 
@@ -76,8 +95,9 @@ class Tag extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
     /**
      * Retrieves Tag Name from DB by passed id.
      *
-     * @param string $id
-     * @return string|bool
+     * @param $id
+     * @return string
+     * @throws \Magento\Framework\Exception\LocalizedException
      */
     public function getTagNameById($id)
     {
@@ -86,13 +106,12 @@ class Tag extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
             ->from($this->getMainTable(), 'name')
             ->where('tag_id = :tag_id');
         $binds = ['tag_id' => (int)$id];
+
         return $adapter->fetchOne($select, $binds);
     }
+
     /**
-     * before save callback
-     *
-     * @param \Magento\Framework\Model\AbstractModel|\Mageplaza\Blog\Model\Tag $object
-     * @return $this
+     * @inheritdoc
      */
     protected function _beforeSave(\Magento\Framework\Model\AbstractModel $object)
     {
@@ -100,48 +119,25 @@ class Tag extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
         if ($object->isObjectNew()) {
             $object->setCreatedAt($this->date->date());
         }
-        //Check Url Key
 
-        if ($object->isObjectNew()) {
-            $count   = 0;
-            $objName = $object->getName();
-            if ($object->getUrlKey()) {
-                $urlKey = $object->getUrlKey();
-            } else {
-                $urlKey = $this->generateUrlKey($objName, $count);
-            }
-            while ($this->checkUrlKey($urlKey)) {
-                $count++;
-                $urlKey = $this->generateUrlKey($urlKey, $count);
-            }
-            $object->setUrlKey($urlKey);
-        } else {
-            $objectId = $object->getId();
-            $count    = 0;
-            $objName  = $object->getName();
-            if ($object->getUrlKey()) {
-                $urlKey = $object->getUrlKey();
-            } else {
-                $urlKey = $this->generateUrlKey($objName, $count);
-            }
-            while ($this->checkUrlKey($urlKey, $objectId)) {
-                $count++;
-                $urlKey = $this->generateUrlKey($urlKey, $count);
-            }
-
-            $object->setUrlKey($urlKey);
+        if (is_array($object->getStoreIds())) {
+            $object->setStoreIds(implode(',', $object->getStoreIds()));
         }
+
+        $object->setUrlKey(
+            $this->helperData->generateUrlKey($this, $object, $object->getUrlKey() ?: $object->getName())
+        );
+
         return parent::_beforeSave($object);
     }
+
     /**
-     * after save callback
-     *
-     * @param \Magento\Framework\Model\AbstractModel|\Mageplaza\Blog\Model\Tag $object
-     * @return $this
+     * @inheritdoc
      */
     protected function _afterSave(\Magento\Framework\Model\AbstractModel $object)
     {
         $this->savePostRelation($object);
+
         return parent::_afterSave($object);
     }
 
@@ -151,14 +147,12 @@ class Tag extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
      */
     public function getPostsPosition(\Mageplaza\Blog\Model\Tag $tag)
     {
-        $select = $this->getConnection()->select()->from(
-            $this->tagPostTable,
-            ['post_id', 'position']
-        )
-        ->where(
-            'tag_id = :tag_id'
-        );
+        $select = $this->getConnection()->select()
+            ->from($this->tagPostTable, ['post_id', 'position'])
+            ->where('tag_id = :tag_id');
+
         $bind = ['tag_id' => (int)$tag->getId()];
+
         return $this->getConnection()->fetchPairs($select, $bind);
     }
 
@@ -220,31 +214,54 @@ class Tag extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
             $postIds = array_keys($insert + $delete + $update);
             $tag->setAffectedPostIds($postIds);
         }
+
         return $this;
     }
-    public function generateUrlKey($name, $count)
-    {
-		return $this->helperData->generateUrlKey($name,$count);
-    }
 
-    public function checkUrlKey($url, $id = null)
+    /**
+     * Check category url key is exists
+     *
+     * @param $urlKey
+     * @return string
+     * @throws \Magento\Framework\Exception\LocalizedException
+     */
+    public function isDuplicateUrlKey($urlKey)
     {
         $adapter = $this->getConnection();
-        if ($id) {
-            $select            = $adapter->select()
-                ->from($this->getMainTable(), '*')
-                ->where('url_key = :url_key')
-                ->where('tag_id != :tag_id');
-            $binds['url_key']  = (string)$url;
-            $binds ['tag_id'] = (int)$id;
-        } else {
-            $select = $adapter->select()
-                ->from($this->getMainTable(), '*')
-                ->where('url_key = :url_key');
-            $binds  = ['url_key' => (string)$url];
-        }
-        $result = $adapter->fetchOne($select, $binds);
+        $select = $adapter->select()
+            ->from($this->getMainTable(), 'tag_id')
+            ->where('url_key = :url_key');
+        $binds = ['url_key' => $urlKey];
 
-        return $result;
+        return $adapter->fetchOne($select, $binds);
+    }
+
+    /**
+     * Check is import tag
+     *
+     * @param $importSource
+     * @param $oldId
+     * @return string
+     * @throws \Magento\Framework\Exception\LocalizedException
+     */
+    public function isImported($importSource, $oldId)
+    {
+        $adapter = $this->getConnection();
+        $select = $adapter->select()
+            ->from($this->getMainTable(), 'tag_id')
+            ->where('import_source = :import_source');
+        $binds = ['import_source' => $importSource . '-' . $oldId];
+
+        return $adapter->fetchOne($select, $binds);
+    }
+
+    /**
+     * @param $importType
+     * @throws \Magento\Framework\Exception\LocalizedException
+     */
+    public function deleteImportItems($importType)
+    {
+        $adapter = $this->getConnection();
+        $adapter->delete($this->getMainTable(), "`import_source` LIKE '" . $importType . "%'");
     }
 }

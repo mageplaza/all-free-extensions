@@ -16,14 +16,15 @@
  *
  * @category    Mageplaza
  * @package     Mageplaza_Blog
- * @copyright   Copyright (c) 2016 Mageplaza (http://www.mageplaza.com/)
+ * @copyright   Copyright (c) 2018 Mageplaza (http://www.mageplaza.com/)
  * @license     https://www.mageplaza.com/LICENSE.txt
  */
 -->
 <config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:framework:Module/etc/module.xsd">
-    <module name="Mageplaza_Blog" setup_version="1.1.3"> <!--  = v2.3.0        -->
+    <module name="Mageplaza_Blog" setup_version="2.4.9">
         <sequence>
             <module name="Magento_Backend"/>
+            <module name="Mageplaza_Core"/>
         </sequence>
     </module>
 </config>

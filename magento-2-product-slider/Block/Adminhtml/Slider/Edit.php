@@ -1,44 +1,83 @@
 <?php
 /**
- * Mageplaza_Productslider extension
- *                     NOTICE OF LICENSE
- * 
- *                     This source file is subject to the MIT License
- *                     that is bundled with this package in the file LICENSE.txt.
- *                     It is also available through the world-wide-web at this URL:
- *                     https://www.mageplaza.com/LICENSE.txt
- * 
- *                     @category  Mageplaza
- *                     @package   Mageplaza_Productslider
- *                     @copyright Copyright (c) 2016
- *                     @license   https://www.mageplaza.com/LICENSE.txt
+ * Mageplaza
+ *
+ * NOTICE OF LICENSE
+ *
+ * This source file is subject to the Mageplaza.com license that is
+ * available through the world-wide-web at this URL:
+ * https://www.mageplaza.com/LICENSE.txt
+ *
+ * DISCLAIMER
+ *
+ * Do not edit or add to this file if you wish to upgrade this extension to newer
+ * version in the future.
+ *
+ * @category    Mageplaza
+ * @package     Mageplaza_Productslider
+ * @copyright   Copyright (c) Mageplaza (https://www.mageplaza.com/)
+ * @license     https://www.mageplaza.com/LICENSE.txt
  */
+
 namespace Mageplaza\Productslider\Block\Adminhtml\Slider;
 
-class Edit extends \Magento\Backend\Block\Widget\Form\Container
+use Magento\Backend\Block\Widget\Context;
+use Magento\Backend\Block\Widget\Form\Container;
+use Magento\Framework\Registry;
+
+/**
+ * Class Edit
+ * @package Mageplaza\Productslider\Block\Adminhtml\Slider
+ */
+class Edit extends Container
 {
     /**
      * Core registry
-     * 
+     *
      * @var \Magento\Framework\Registry
      */
     protected $_coreRegistry;
 
     /**
-     * constructor
-     * 
+     * Edit constructor.
      * @param \Magento\Framework\Registry $coreRegistry
      * @param \Magento\Backend\Block\Widget\Context $context
      * @param array $data
      */
     public function __construct(
-        \Magento\Framework\Registry $coreRegistry,
-        \Magento\Backend\Block\Widget\Context $context,
+        Registry $coreRegistry,
+        Context $context,
         array $data = []
     )
     {
-        $this->_coreRegistry = $coreRegistry;
         parent::__construct($context, $data);
+
+        $this->_coreRegistry = $coreRegistry;
+    }
+
+    /**
+     * Retrieve text for header element depending on loaded Slider
+     *
+     * @return string
+     */
+    public function getHeaderText()
+    {
+        $slider = $this->getSlider();
+        if ($slider->getId()) {
+            return __("Edit Slider '%1'", $this->escapeHtml($slider->getName()));
+        }
+
+        return __('New Slider');
+    }
+
+    /**
+     * Get Slider
+     *
+     * @return mixed
+     */
+    public function getSlider()
+    {
+        return $this->_coreRegistry->registry('mageplaza_productslider_slider');
     }
 
     /**
@@ -48,20 +87,21 @@ class Edit extends \Magento\Backend\Block\Widget\Form\Container
      */
     protected function _construct()
     {
-        $this->_objectId = 'slider_id';
+        $this->_objectId   = 'id';
         $this->_blockGroup = 'Mageplaza_Productslider';
         $this->_controller = 'adminhtml_slider';
+
         parent::_construct();
-        $this->buttonList->update('save', 'label', __('Save Slider'));
+
         $this->buttonList->add(
             'save-and-continue',
             [
-                'label' => __('Save and Continue Edit'),
-                'class' => 'save',
+                'label'          => __('Save and Continue Edit'),
+                'class'          => 'save',
                 'data_attribute' => [
                     'mage-init' => [
                         'button' => [
-                            'event' => 'saveAndContinueEdit',
+                            'event'  => 'saveAndContinueEdit',
                             'target' => '#edit_form'
                         ]
                     ]
@@ -69,20 +109,22 @@ class Edit extends \Magento\Backend\Block\Widget\Form\Container
             ],
             -100
         );
-        $this->buttonList->update('delete', 'label', __('Delete Slider'));
-    }
-    /**
-     * Retrieve text for header element depending on loaded Slider
-     *
-     * @return string
-     */
-    public function getHeaderText()
-    {
-        /** @var \Mageplaza\Productslider\Model\Slider $slider */
-        $slider = $this->_coreRegistry->registry('mageplaza_productslider_slider');
-        if ($slider->getId()) {
-            return __("Edit Slider '%1'", $this->escapeHtml($slider->getName()));
-        }
-        return __('New Slider');
+
+        $this->_formScripts[] = "
+        require(['jquery'], function ($){
+            $('#slider_product_type').on('change', function(){
+                showHideProductTab();
+            });
+            showHideProductTab();
+            
+            function showHideProductTab(){
+                if($('#slider_product_type').val() == 'custom'){
+                    $('#slider_tabs_products').parent().show();
+                } else {
+                    $('#slider_tabs_products').parent().hide();
+                }
+            }
+        });
+        ";
     }
 }

@@ -15,7 +15,7 @@
  *
  * @category    Mageplaza
  * @package     Mageplaza_SocialLogin
- * @copyright   Copyright (c) 2016 Mageplaza (http://www.mageplaza.com/)
+ * @copyright   Copyright (c) Mageplaza (http://www.mageplaza.com/)
  * @license     https://www.mageplaza.com/LICENSE.txt
  */
  -->
@@ -23,11 +23,12 @@
 <!-- ko if: isActive() -->
 <div class="block social-login-authentication-popup col-mp">
     <div class="block-content" data-bind="foreach: socials()">
-			<div class="actions-toolbar social-btn" data-bind="css: key + '-login'">
-                <a class="btn btn-block btn-social" data-bind="css: 'btn-' + btn_key, socialButton: $parent.isActive, url: url, label: label">
-                    <span class="fa" data-bind="css: 'fa-' + btn_key"></span>
-                </a>
-            </div>
+        <div class="actions-toolbar social-btn" data-bind="css: key + '-login'">
+            <a class="btn btn-block btn-social"
+               data-bind="css: 'btn-' + btn_key, socialButton: $parent.isActive, url: url, label: label">
+                <span class="fa" data-bind="css: 'fa-' + btn_key"></span>
+            </a>
+        </div>
     </div>
 </div>
 <!-- /ko -->

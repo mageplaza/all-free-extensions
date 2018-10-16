@@ -15,12 +15,19 @@
  *
  * @category    Mageplaza
  * @package     Mageplaza_Blog
- * @copyright   Copyright (c) 2016 Mageplaza (http://www.mageplaza.com/)
+ * @copyright   Copyright (c) 2018 Mageplaza (http://www.mageplaza.com/)
  * @license     https://www.mageplaza.com/LICENSE.txt
  */
+
 namespace Mageplaza\Blog\Model\ResourceModel\Topic;
 
-class Collection extends \Magento\Framework\Model\ResourceModel\Db\Collection\AbstractCollection
+use Magento\Framework\Model\ResourceModel\Db\Collection\AbstractCollection;
+
+/**
+ * Class Collection
+ * @package Mageplaza\Blog\Model\ResourceModel\Topic
+ */
+class Collection extends AbstractCollection
 {
     /**
      * ID Field Name
@@ -63,8 +70,10 @@ class Collection extends \Magento\Framework\Model\ResourceModel\Db\Collection\Ab
     {
         $countSelect = parent::getSelectCountSql();
         $countSelect->reset(\Zend_Db_Select::GROUP);
+
         return $countSelect;
     }
+
     /**
      * @param string $valueField
      * @param string $labelField
@@ -74,5 +83,35 @@ class Collection extends \Magento\Framework\Model\ResourceModel\Db\Collection\Ab
     protected function _toOptionArray($valueField = 'topic_id', $labelField = 'name', $additional = [])
     {
         return parent::_toOptionArray($valueField, $labelField, $additional);
+    }
+
+    /**
+     * @param $topicIds
+     * @return $this
+     */
+    public function addIdFilter($topicIds)
+    {
+        $condition = '';
+
+        if (is_array($topicIds)) {
+            if (!empty($topicIds)) {
+                $condition = ['in' => $topicIds];
+            }
+        } elseif (is_numeric($topicIds)) {
+            $condition = $topicIds;
+        } elseif (is_string($topicIds)) {
+            $ids = explode(',', $topicIds);
+            if (empty($ids)) {
+                $condition = $topicIds;
+            } else {
+                $condition = ['in' => $ids];
+            }
+        }
+
+        if ($condition != '') {
+            $this->addFieldToFilter('topic_id', $condition);
+        }
+
+        return $this;
     }
 }

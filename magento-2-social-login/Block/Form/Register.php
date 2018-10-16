@@ -15,7 +15,7 @@
  *
  * @category    Mageplaza
  * @package     Mageplaza_SocialLogin
- * @copyright   Copyright (c) 2016 Mageplaza (http://www.mageplaza.com/)
+ * @copyright   Copyright (c) Mageplaza (http://www.mageplaza.com/)
  * @license     https://www.mageplaza.com/LICENSE.txt
  */
 
@@ -23,15 +23,16 @@ namespace Mageplaza\SocialLogin\Block\Form;
 
 /**
  * Class Register
+ *
  * @package Mageplaza\SocialLogin\Block\Form
  */
 class Register extends \Magento\Customer\Block\Form\Register
 {
-	/**
-	 * @return $this
-	 */
-	protected function _prepareLayout()
-	{
-		return $this;
-	}
+    /**
+     * @return $this
+     */
+    protected function _prepareLayout()
+    {
+        return $this;
+    }
 }

@@ -15,23 +15,47 @@
  *
  * @category    Mageplaza
  * @package     Mageplaza_Blog
- * @copyright   Copyright (c) 2016 Mageplaza (http://www.mageplaza.com/)
+ * @copyright   Copyright (c) 2018 Mageplaza (http://www.mageplaza.com/)
  * @license     https://www.mageplaza.com/LICENSE.txt
  */
+
 namespace Mageplaza\Blog\Block\Sidebar;
 
 use Mageplaza\Blog\Block\Frontend;
 
-class Mostview extends Frontend
+/**
+ * Class MostView
+ * @package Mageplaza\Blog\Block\Sidebar
+ */
+class MostView extends Frontend
 {
-
-    public function getMosviewPosts()
+    /**
+     * @return \Mageplaza\Blog\Model\ResourceModel\Post\Collection
+     */
+    public function getMostViewPosts()
     {
-        return $this->helperData->getMosviewPosts();
+        $collection = $this->helperData->getPostList();
+        $collection->getSelect()
+            ->joinLeft(
+                ['traffic' => $collection->getTable('mageplaza_blog_post_traffic')],
+                'main_table.post_id=traffic.post_id',
+                'numbers_view'
+            )
+            ->order('numbers_view DESC')
+            ->limit((int)$this->helperData->getBlogConfig('sidebar/number_mostview_posts') ?: 4);
+
+        return $collection;
     }
 
+    /**
+     * @return \Mageplaza\Blog\Model\ResourceModel\Post\Collection
+     */
     public function getRecentPost()
     {
-        return $this->helperData->getRecentPost();
+        $collection = $this->helperData->getPostList();
+        $collection->getSelect()
+            ->limit((int)$this->helperData->getBlogConfig('sidebar/number_recent_posts') ?: 4);
+
+        return $collection;
     }
 }

@@ -16,13 +16,16 @@
  *
  * @category    Mageplaza
  * @package     Mageplaza_Blog
- * @copyright   Copyright (c) 2016 Mageplaza (http://www.mageplaza.com/)
+ * @copyright   Copyright (c) 2018 Mageplaza (http://www.mageplaza.com/)
  * @license     https://www.mageplaza.com/LICENSE.txt
  */
 -->
 <config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Store:etc/config.xsd">
     <default>
         <blog>
+            <module>
+                <type>1</type>
+            </module>
             <general>
                 <enabled>1</enabled>
                 <name>Blog</name>
@@ -32,11 +35,26 @@
                 <footer>1</footer>
                 <display_author>1</display_author>
                 <display_sitemap>1</display_sitemap>
-                <date_type>1</date_type>
+                <date_type>F j, Y</date_type>
                 <font_color>#1abc9c</font_color>
-                <pagination>10</pagination>
+                <pagination>10,20,50</pagination>
                 <related_post>5</related_post>
+                <resize_image>
+                    <resize_width>900</resize_width>
+                    <resize_height>500</resize_height>
+                </resize_image>
             </general>
+            <product_post>
+                <product_detail>
+                    <enable_post>1</enable_post>
+                    <post_limit>10</post_limit>
+                </product_detail>
+                <post_detail>
+                    <enable_product>1</enable_product>
+                    <product_limit>12</product_limit>
+                    <title>Related Products</title>
+                </post_detail>
+            </product_post>
             <sidebar>
                 <number_recent_posts>5</number_recent_posts>
                 <number_mostview_posts>5</number_mostview_posts>
@@ -52,10 +70,11 @@
             <monthly_archive>
                 <enable_monthly>1</enable_monthly>
                 <number_records>5</number_records>
-                <date_type_monthly>1</date_type_monthly>
+                <date_type_monthly>F , Y</date_type_monthly>
             </monthly_archive>
             <comment>
                 <type>4</type>
+                <need_approve>0</need_approve>
                 <disqus>mageplazablog</disqus>
                 <facebook_number_comment>10</facebook_number_comment>
                 <facebook_appid>1562328304081606</facebook_appid>
@@ -64,7 +83,7 @@
             </comment>
             <share>
                 <enabled>1</enabled>
-                <pubid_id>ra-568cdc40e9eab41d</pubid_id>
+                <pubid_id>ra-5983d393d9a9b2c9</pubid_id>
             </share>
             <seo>
                 <snippet>

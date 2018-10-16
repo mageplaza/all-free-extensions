@@ -15,19 +15,24 @@
  *
  * @category    Mageplaza
  * @package     Mageplaza_Blog
- * @copyright   Copyright (c) 2016 Mageplaza (http://www.mageplaza.com/)
+ * @copyright   Copyright (c) 2018 Mageplaza (http://www.mageplaza.com/)
  * @license     https://www.mageplaza.com/LICENSE.txt
  */
+
 namespace Mageplaza\Blog\Model;
 
 use Magento\Framework\Model\AbstractModel;
 
+/**
+ * Class Traffic
+ * @package Mageplaza\Blog\Model
+ */
 class Traffic extends AbstractModel
 {
     /**
      * Define resource model
      */
-	public function _construct()
+    public function _construct()
     {
         $this->_init('Mageplaza\Blog\Model\ResourceModel\Traffic');
     }

@@ -15,48 +15,59 @@
  *
  * @category    Mageplaza
  * @package     Mageplaza_Blog
- * @copyright   Copyright (c) 2016 Mageplaza (http://www.mageplaza.com/)
+ * @copyright   Copyright (c) 2018 Mageplaza (http://www.mageplaza.com/)
  * @license     https://www.mageplaza.com/LICENSE.txt
  */
+
 namespace Mageplaza\Blog\Controller\Adminhtml\Category;
 
-class SuggestCategories extends \Mageplaza\Blog\Controller\Adminhtml\Category
+use Magento\Backend\App\Action\Context;
+use Magento\Framework\Controller\Result\JsonFactory;
+use Magento\Framework\Registry;
+use Magento\Framework\View\LayoutFactory;
+use Mageplaza\Blog\Controller\Adminhtml\Category;
+use Mageplaza\Blog\Model\CategoryFactory;
+
+/**
+ * Class SuggestCategories
+ * @package Mageplaza\Blog\Controller\Adminhtml\Category
+ */
+class SuggestCategories extends Category
 {
     /**
      * Json result factory
      *
      * @var \Magento\Framework\Controller\Result\JsonFactory
      */
-	public $resultJsonFactory;
+    public $resultJsonFactory;
 
     /**
      * Layout factory
      *
      * @var \Magento\Framework\View\LayoutFactory
      */
-	public $layoutFactory;
+    public $layoutFactory;
 
     /**
-     * constructor
-     *
+     * SuggestCategories constructor.
      * @param \Magento\Framework\Controller\Result\JsonFactory $resultJsonFactory
      * @param \Magento\Framework\View\LayoutFactory $layoutFactory
      * @param \Mageplaza\Blog\Model\CategoryFactory $categoryFactory
      * @param \Magento\Framework\Registry $coreRegistry
-     * @param \Magento\Backend\Model\View\Result\RedirectFactory $resultRedirectFactory
      * @param \Magento\Backend\App\Action\Context $context
      */
     public function __construct(
-        \Magento\Framework\Controller\Result\JsonFactory $resultJsonFactory,
-        \Magento\Framework\View\LayoutFactory $layoutFactory,
-        \Mageplaza\Blog\Model\CategoryFactory $categoryFactory,
-        \Magento\Framework\Registry $coreRegistry,
-        \Magento\Backend\App\Action\Context $context
-    ) {
-    
+        Context $context,
+        Registry $coreRegistry,
+        CategoryFactory $categoryFactory,
+        JsonFactory $resultJsonFactory,
+        LayoutFactory $layoutFactory
+    )
+    {
         $this->resultJsonFactory = $resultJsonFactory;
-        $this->layoutFactory     = $layoutFactory;
-        parent::__construct($categoryFactory, $coreRegistry, $context);
+        $this->layoutFactory = $layoutFactory;
+
+        parent::__construct($context, $coreRegistry, $categoryFactory);
     }
 
     /**
@@ -66,11 +77,14 @@ class SuggestCategories extends \Mageplaza\Blog\Controller\Adminhtml\Category
      */
     public function execute()
     {
+        /** @var \Mageplaza\Blog\Block\Adminhtml\Category\Tree $treeBlock */
+        $treeBlock = $this->layoutFactory->create()->createBlock('Mageplaza\Blog\Block\Adminhtml\Category\Tree');
+        $data = $treeBlock->getSuggestedCategoriesJson($this->getRequest()->getParam('label_part'));
+
         /** @var \Magento\Framework\Controller\Result\Json $resultJson */
         $resultJson = $this->resultJsonFactory->create();
-        return $resultJson->setJsonData(
-            $this->layoutFactory->create()->createBlock('Mageplaza\Blog\Block\Adminhtml\Category\Tree')
-                ->getSuggestedCategoriesJson($this->getRequest()->getParam('label_part'))
-        );
+        $resultJson->setJsonData($data);
+
+        return $resultJson;
     }
 }

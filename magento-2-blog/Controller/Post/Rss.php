@@ -15,18 +15,26 @@
  *
  * @category    Mageplaza
  * @package     Mageplaza_Blog
- * @copyright   Copyright (c) 2016 Mageplaza (http://www.mageplaza.com/)
+ * @copyright   Copyright (c) 2018 Mageplaza (http://www.mageplaza.com/)
  * @license     https://www.mageplaza.com/LICENSE.txt
  */
+
 namespace Mageplaza\Blog\Controller\Post;
 
 use Magento\Framework\Exception\NotFoundException;
+use Magento\Rss\Controller\Feed;
 
-class Rss extends \Magento\Rss\Controller\Feed
+/**
+ * Class Rss
+ * @package Mageplaza\Blog\Controller\Post
+ */
+class Rss extends Feed
 {
+    /**
+     * @throws \Magento\Framework\Exception\NotFoundException
+     */
     public function execute()
     {
-
         $type = 'blog_posts';
         try {
             $provider = $this->rssManager->getProvider($type);

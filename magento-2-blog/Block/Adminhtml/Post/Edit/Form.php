@@ -15,17 +15,22 @@
  *
  * @category    Mageplaza
  * @package     Mageplaza_Blog
- * @copyright   Copyright (c) 2016 Mageplaza (http://www.mageplaza.com/)
+ * @copyright   Copyright (c) 2018 Mageplaza (http://www.mageplaza.com/)
  * @license     https://www.mageplaza.com/LICENSE.txt
  */
+
 namespace Mageplaza\Blog\Block\Adminhtml\Post\Edit;
 
-class Form extends \Magento\Backend\Block\Widget\Form\Generic
+use Magento\Backend\Block\Widget\Form\Generic;
+
+/**
+ * Class Form
+ * @package Mageplaza\Blog\Block\Adminhtml\Post\Edit
+ */
+class Form extends Generic
 {
     /**
-     * Prepare form
-     *
-     * @return $this
+     * @inheritdoc
      */
     protected function _prepareForm()
     {
@@ -42,6 +47,7 @@ class Form extends \Magento\Backend\Block\Widget\Form\Generic
         );
         $form->setUseContainer(true);
         $this->setForm($form);
+
         return parent::_prepareForm();
     }
 }

@@ -14,15 +14,18 @@
  *
  * @category    Mageplaza
  * @package     Mageplaza_SocialLogin
- * @copyright   Copyright (c) 2016 Mageplaza (http://www.mageplaza.com/)
+ * @copyright   Copyright (c) Mageplaza (http://www.mageplaza.com/)
  * @license     https://www.mageplaza.com/LICENSE.txt
  */
 
 define([
     'jquery',
     'Magento_Customer/js/customer-data',
+    'mage/translate',
     'mageplaza/core/jquery/popup'
-], function ($, customerData) {
+], function ($, customerData, $t) {
+    'use strict';
+
     $.widget('mageplaza.socialpopup', {
         options: {
             /*General*/
@@ -41,6 +44,14 @@ define([
             forgotBtn: '#social-form-login .action.remind',
             createBtn: '#social-form-login .action.create',
             formLoginUrl: '',
+            /*Email*/
+            emailFormContainer: '.social-login.fake-email',
+            fakeEmailSendBtn: '#social-form-fake-email .action.send',
+            fakeEmailType: '',
+            fakeEmailFrom: '#social-form-fake-email',
+            fakeEmailFormContent: '.social-login.fake-email .block-content',
+            fakeEmailUrl: '',
+            fakeEmailCancelBtn: '#social-form-fake-email .action.cancel',
             /*Forgot*/
             forgotFormContainer: '.social-login.forgot',
             forgotFormContent: '.social-login.forgot .block-content',
@@ -54,19 +65,26 @@ define([
             createForm: '#social-form-create',
             createAccBtn: '#social-form-create .action.create',
             createBackBtn: '#social-form-create .action.back',
-            createFormUrl: '',
-            /*Captcha*/
-            loginCaptchaImg: '.authentication .captcha-img',
-            createCaptchaImg: '.create .captcha-img',
-            forgotCaptchaImg: '.forgot .captcha-img'
+            createFormUrl: ''
         },
 
+        /**
+         * @private
+         */
         _create: function () {
+            var self = this;
             this.initObject();
             this.initLink();
             this.initObserve();
+            window.fakeEmailCallback = function (type) {
+                self.options.fakeEmailType = type;
+                self.showEmail();
+            };
         },
 
+        /**
+         * Init object will be used
+         */
         initObject: function () {
             this.loginForm = $(this.options.loginForm);
             this.createForm = $(this.options.createForm);
@@ -80,11 +98,14 @@ define([
             this.forgotFormContent = $(this.options.forgotFormContent);
             this.createFormContent = $(this.options.createFormContent);
 
-            this.loginCaptchaImg = $(this.options.loginCaptchaImg);
-            this.createCaptchaImg = $(this.options.createCaptchaImg);
-            this.forgotCaptchaImg = $(this.options.forgotCaptchaImg);
+            this.emailFormContainer = $(this.options.emailFormContainer);
+            this.fakeEmailFrom = $(this.options.fakeEmailFrom);
+            this.fakeEmailFormContent = $(this.options.fakeEmailFormContent);
         },
 
+        /**
+         * Init links login
+         */
         initLink: function () {
             var self = this,
                 headerLink = $(this.options.headerLink);
@@ -94,12 +115,12 @@ define([
                     var el = $(this),
                         href = el.attr('href');
 
-                    if (typeof href !== 'undefined' && (href.search('customer/account/login') != -1 || href.search('customer/account/create') != -1)) {
+                    if (typeof href !== 'undefined' && (href.search('customer/account/login') !== -1 || href.search('customer/account/create') !== -1)) {
                         el.addClass('social-login');
                         el.attr('href', self.options.popup);
                         el.attr('data-effect', self.options.popupEffect);
                         el.on('click', function (event) {
-                            if (href.search('customer/account/create') != -1) {
+                            if (href.search('customer/account/create') !== -1) {
                                 self.showCreate();
                             } else {
                                 self.showLogin();
@@ -121,59 +142,179 @@ define([
                     midClick: true
                 });
             }
+
+            this.options.createFormUrl = this.correctUrlProtocol(this.options.createFormUrl);
+            this.options.formLoginUrl = this.correctUrlProtocol(this.options.formLoginUrl);
+            this.options.forgotFormUrl = this.correctUrlProtocol(this.options.forgotFormUrl);
+            this.options.fakeEmailUrl = this.correctUrlProtocol(this.options.fakeEmailUrl);
         },
 
+        /**
+         * Correct url protocol to match with current protocol
+         * @param url
+         * @returns {*}
+         */
+        correctUrlProtocol: function (url) {
+            var protocol = window.location.protocol;
+            if (!url.includes(protocol)) {
+                url = url.replace(/http:|https:/gi, protocol);
+            }
+
+            return url;
+        },
+
+        /**
+         * Init button click
+         */
         initObserve: function () {
+            this.initLoginObserve();
+            this.initCreateObserve();
+            this.initForgotObserve();
+            this.initEmailObserve();
+
+            $(this.options.createBtn).on('click', this.showCreate.bind(this));
+            $(this.options.forgotBtn).on('click', this.showForgot.bind(this));
+            $(this.options.createBackBtn).on('click', this.showLogin.bind(this));
+            $(this.options.forgotBackBtn).on('click', this.showLogin.bind(this));
+        },
+
+        /**
+         * Login process
+         */
+        initLoginObserve: function () {
             var self = this;
 
             $(this.options.loginBtn).on('click', this.processLogin.bind(this));
-            $(this.options.createBtn).on('click', this.showCreate.bind(this));
-            $(this.options.forgotBtn).on('click', this.showForgot.bind(this));
-
-            $(this.options.createAccBtn).on('click', this.processCreate.bind(this));
-            $(this.options.createBackBtn).on('click', this.showLogin.bind(this));
-
-            $(this.options.forgotSendBtn).on('click', this.processForgot.bind(this));
-            $(this.options.forgotBackBtn).on('click', this.showLogin.bind(this));
-
             this.loginForm.find('input').keypress(function (event) {
                 var code = event.keyCode || event.which;
-                if (code == 13) {
+                if (code === 13) {
                     self.processLogin();
                 }
             });
+        },
+
+        /**
+         * Create process
+         */
+        initCreateObserve: function () {
+            var self = this;
+
+            $(this.options.createAccBtn).on('click', this.processCreate.bind(this));
             this.createForm.find('input').keypress(function (event) {
                 var code = event.keyCode || event.which;
-                if (code == 13) {
+                if (code === 13) {
                     self.processCreate();
                 }
             });
+        },
+
+        /**
+         * Forgot process
+         */
+        initForgotObserve: function () {
+            var self = this;
+
+            $(this.options.forgotSendBtn).on('click', this.processForgot.bind(this));
             this.forgotForm.find('input').keypress(function (event) {
                 var code = event.keyCode || event.which;
-                if (code == 13) {
+                if (code === 13) {
                     self.processForgot();
                 }
             });
         },
 
+        /**
+         * Email process
+         */
+        initEmailObserve: function () {
+            var self = this;
+
+            $(this.options.fakeEmailSendBtn).on('click', this.processEmail.bind(this));
+            this.fakeEmailFrom.find('input').keypress(function (event) {
+                var code = event.keyCode || event.which;
+                if (code === 13) {
+                    self.processEmail();
+                }
+            });
+        },
+
+        /**
+         * Show Login page
+         */
         showLogin: function () {
+            this.reloadCaptcha('login', 50);
             this.loginFormContainer.show();
             this.forgotFormContainer.hide();
             this.createFormContainer.hide();
+            this.emailFormContainer.hide();
         },
 
+        /**
+         * Show email page
+         */
+        showEmail: function () {
+            this.loginFormContainer.hide();
+            this.forgotFormContainer.hide();
+            this.createFormContainer.hide();
+            this.emailFormContainer.show();
+        },
+
+        /**
+         * Show create page
+         */
         showCreate: function () {
+            this.reloadCaptcha('create', 50);
             this.loginFormContainer.hide();
             this.forgotFormContainer.hide();
             this.createFormContainer.show();
+            this.emailFormContainer.hide();
         },
 
+        /**
+         * Show forgot password page
+         */
         showForgot: function () {
+            this.reloadCaptcha('forgot', 50);
             this.loginFormContainer.hide();
             this.forgotFormContainer.show();
             this.createFormContainer.hide();
+            this.emailFormContainer.hide();
         },
 
+        /**
+         * Reload captcha if enabled
+         * @param type
+         * @param delay
+         */
+        reloadCaptcha: function (type, delay) {
+            if (typeof this.captchaReload === 'undefined') {
+                this.captchaReload = {
+                    all: $('#social-login-popup .captcha-reload'),
+                    login: $('#social-login-popup .authentication .captcha-reload'),
+                    create: $('#social-login-popup .create .captcha-reload'),
+                    forgot: $('#social-login-popup .forgot .captcha-reload')
+                };
+            }
+
+            if (typeof type === 'undefined') {
+                type = 'all';
+            }
+
+            if (this.captchaReload.hasOwnProperty(type) && this.captchaReload[type].length) {
+                if (typeof delay === 'undefined') {
+                    this.captchaReload[type].trigger('click');
+                } else {
+                    var self = this;
+                    setTimeout(function () {
+                        self.captchaReload[type].trigger('click');
+                    }, delay);
+                }
+            }
+        },
+
+        /**
+         * Process login
+         */
         processLogin: function () {
             if (!this.loginForm.valid()) {
                 return;
@@ -186,43 +327,46 @@ define([
 
             formDataArray.forEach(function (entry) {
                 loginData[entry.name] = entry.value;
+                if (entry.name.includes('user_login')) {
+                    loginData['captcha_string'] = entry.value;
+                    loginData['captcha_form_id'] = 'user_login';
+                }
             });
 
             this.appendLoading(this.loginFormContent);
             this.removeMsg(this.loginFormContent, options.errorMsgClass);
 
-            $.ajax({
+            return $.ajax({
                 url: options.formLoginUrl,
                 type: 'POST',
                 data: JSON.stringify(loginData)
             }).done(function (response) {
-                if (response.errors) {
-                    self.removeLoading(self.loginFormContent);
-                    if (response.imgSrc) {
-                        if (self.loginCaptchaImg.length) {
-                            self.addMsg(self.loginFormContent, response.message, options.errorMsgClass);
-                            self.loginCaptchaImg.attr('src', response.imgSrc);
-                        } else {
-                            window.location.reload();
-                        }
-                    } else {
-                        self.addMsg(self.loginFormContent, response.message, options.errorMsgClass);
-                    }
-                } else {
+                response.success = !response.errors;
+                self.addMsg(self.loginFormContent, response);
+                if (response.success) {
                     customerData.invalidate(['customer']);
-                    self.addMsg(self.loginFormContent, response.message, options.successMsgClass);
                     if (response.redirectUrl) {
                         window.location.href = response.redirectUrl;
                     } else {
-                        location.reload();
+                        window.location.reload();
                     }
+                } else {
+                    self.reloadCaptcha('login');
+                    self.removeLoading(self.loginFormContent);
                 }
             }).fail(function () {
+                self.reloadCaptcha('login');
+                self.addMsg(self.loginFormContent, {
+                    message: $t('Could not authenticate. Please try again later'),
+                    success: false
+                });
                 self.removeLoading(self.loginFormContent);
-                self.addMsg(self.loginFormContent, 'Could not authenticate. Please try again later', options.errorMsgClass);
             });
         },
 
+        /**
+         * Process forgot
+         */
         processForgot: function () {
             if (!this.forgotForm.valid()) {
                 return;
@@ -236,23 +380,57 @@ define([
             this.removeMsg(this.forgotFormContent, options.errorMsgClass);
             this.removeMsg(this.forgotFormContent, options.successMsgClass);
 
-            $.ajax({
+            return $.ajax({
                 url: options.forgotFormUrl,
                 type: 'POST',
                 data: parameters
             }).done(function (response) {
+                self.reloadCaptcha('forgot');
+                self.addMsg(self.forgotFormContent, response);
                 self.removeLoading(self.forgotFormContent);
+            });
+        },
+
+        /**
+         * Process email
+         */
+        processEmail: function () {
+            if (!this.fakeEmailFrom.valid()) {
+                return;
+            }
+            var input = $("<input>")
+                .attr("type", "hidden")
+                .attr("name", "type").val(this.options.fakeEmailType.toLowerCase());
+            $(this.fakeEmailFrom).append($(input));
+
+            var self = this;
+            var options = this.options,
+                parameters = this.fakeEmailFrom.serialize();
+
+            this.appendLoading(this.fakeEmailFormContent);
+            this.removeMsg(this.fakeEmailFormContent, options.errorMsgClass);
+            this.removeMsg(this.fakeEmailFormContent, options.successMsgClass);
+
+            return $.ajax({
+                url: options.fakeEmailUrl,
+                type: 'POST',
+                data: parameters
+            }).done(function (response) {
+                self.addMsg(self.fakeEmailFrom, response);
+                self.removeLoading(self.fakeEmailFormContent);
                 if (response.success) {
-                    self.addMsg(self.forgotFormContent, response.message, options.successMsgClass);
-                } else {
-                    self.addMsg(self.forgotFormContent, response.message, options.errorMsgClass);
-                }
-                if (response.imgSrc && self.forgotCaptchaImg.length) {
-                    self.forgotCaptchaImg.attr('src', response.imgSrc);
+                    if (response.url == '' || response.url == null) {
+                        window.location.reload(true);
+                    } else {
+                        window.location.href = response.url;
+                    }
                 }
             });
         },
 
+        /**
+         * Process create account
+         */
         processCreate: function () {
             if (!this.createForm.valid()) {
                 return;
@@ -265,44 +443,49 @@ define([
             this.appendLoading(this.createFormContent);
             this.removeMsg(this.createFormContent, options.errorMsgClass);
 
-            $.ajax({
+            return $.ajax({
                 url: options.createFormUrl,
                 type: 'POST',
                 data: parameters
             }).done(function (response) {
-                if(response.redirect){
+                if (response.redirect) {
                     window.location.href = response.redirect;
                 } else if (response.success) {
                     customerData.invalidate(['customer']);
-                    self.addMsg(self.createFormContent, response.message, options.successMsgClass);
+                    self.addMsg(self.createFormContent, response);
                     window.location.reload(true);
                 } else {
+                    self.reloadCaptcha('create');
+                    self.addMsg(self.createFormContent, response);
                     self.removeLoading(self.createFormContent);
-                    if (response.imgSrc) {
-                        if (self.createCaptchaImg.length) {
-                            self.addMsg(self.createFormContent, response.message, options.errorMsgClass);
-                            self.createCaptchaImg.attr('src', response.imgSrc);
-                        } else {
-                            window.location.reload();
-                        }
-                    } else {
-                        self.addMsg(self.createFormContent, response.message, options.errorMsgClass);
-                    }
                 }
             });
         },
 
+        /**
+         * @param block
+         */
         appendLoading: function (block) {
             block.css('position', 'relative');
             block.prepend($("<div></div>", {"class": this.options.loadingClass}))
         },
 
+        /**
+         * @param block
+         */
         removeLoading: function (block) {
             block.css('position', '');
             block.find("." + this.options.loadingClass).remove();
         },
 
-        addMsg: function (block, message, messageClass) {
+        /**
+         * @param block
+         * @param response
+         */
+        addMsg: function (block, response) {
+            var message = response.message,
+                messageClass = response.success ? this.options.successMsgClass : this.options.errorMsgClass;
+
             if (typeof(message) === 'object' && message.length > 0) {
                 message.forEach(function (msg) {
                     this._appendMessage(block, msg, messageClass);
@@ -312,10 +495,20 @@ define([
             }
         },
 
+        /**
+         * @param block
+         * @param messageClass
+         */
         removeMsg: function (block, messageClass) {
             block.find('.' + messageClass.replace(/ /g, '.')).remove();
         },
 
+        /**
+         * @param block
+         * @param message
+         * @param messageClass
+         * @private
+         */
         _appendMessage: function (block, message, messageClass) {
             var currentMessage = null;
             var messageSection = block.find("." + messageClass.replace(/ /g, '.'));

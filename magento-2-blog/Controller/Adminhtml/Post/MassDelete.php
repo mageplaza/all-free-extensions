@@ -15,26 +15,37 @@
  *
  * @category    Mageplaza
  * @package     Mageplaza_Blog
- * @copyright   Copyright (c) 2016 Mageplaza (http://www.mageplaza.com/)
+ * @copyright   Copyright (c) 2018 Mageplaza (http://www.mageplaza.com/)
  * @license     https://www.mageplaza.com/LICENSE.txt
  */
+
 namespace Mageplaza\Blog\Controller\Adminhtml\Post;
 
-class MassDelete extends \Magento\Backend\App\Action
+use Magento\Backend\App\Action;
+use Magento\Backend\App\Action\Context;
+use Magento\Framework\Controller\ResultFactory;
+use Magento\Ui\Component\MassAction\Filter;
+use Mageplaza\Blog\Model\ResourceModel\Post\CollectionFactory;
+
+/**
+ * Class MassDelete
+ * @package Mageplaza\Blog\Controller\Adminhtml\Post
+ */
+class MassDelete extends Action
 {
     /**
      * Mass Action Filter
      *
      * @var \Magento\Ui\Component\MassAction\Filter
      */
-	public $filter;
+    public $filter;
 
     /**
      * Collection Factory
      *
      * @var \Mageplaza\Blog\Model\ResourceModel\Post\CollectionFactory
      */
-	public $collectionFactory;
+    public $collectionFactory;
 
     /**
      * constructor
@@ -44,37 +55,36 @@ class MassDelete extends \Magento\Backend\App\Action
      * @param \Magento\Backend\App\Action\Context $context
      */
     public function __construct(
-        \Magento\Ui\Component\MassAction\Filter $filter,
-        \Mageplaza\Blog\Model\ResourceModel\Post\CollectionFactory $collectionFactory,
-        \Magento\Backend\App\Action\Context $context
-    ) {
-    
-        $this->filter            = $filter;
+        Context $context,
+        Filter $filter,
+        CollectionFactory $collectionFactory
+    )
+    {
+        $this->filter = $filter;
         $this->collectionFactory = $collectionFactory;
+
         parent::__construct($context);
     }
 
     /**
-     * execute action
-     *
-     * @return \Magento\Backend\Model\View\Result\Redirect
+     * @return $this|\Magento\Framework\App\ResponseInterface|\Magento\Framework\Controller\ResultInterface
+     * @throws \Magento\Framework\Exception\LocalizedException
      */
     public function execute()
     {
         $collection = $this->filter->getCollection($this->collectionFactory->create());
 
-		try {
-			$collection->walk('delete');
-		} catch (\Exception $e){
-			$this->messageManager->addSuccess(__('Something wrong when delete Posts.'));
-			/** @var \Magento\Backend\Model\View\Result\Redirect $resultRedirect */
-			$resultRedirect = $this->resultFactory->create(\Magento\Framework\Controller\ResultFactory::TYPE_REDIRECT);
-			return $resultRedirect->setPath('*/*/');
-		}
+        try {
+            $collection->walk('delete');
 
-        $this->messageManager->addSuccess(__('Posts has been deleted.'));
+            $this->messageManager->addSuccessMessage(__('Posts has been deleted.'));
+        } catch (\Exception $e) {
+            $this->messageManager->addErrorMessage(__('Something wrong when delete Posts.'));
+        }
+
         /** @var \Magento\Backend\Model\View\Result\Redirect $resultRedirect */
-        $resultRedirect = $this->resultFactory->create(\Magento\Framework\Controller\ResultFactory::TYPE_REDIRECT);
+        $resultRedirect = $this->resultFactory->create(ResultFactory::TYPE_REDIRECT);
+
         return $resultRedirect->setPath('*/*/');
     }
 }

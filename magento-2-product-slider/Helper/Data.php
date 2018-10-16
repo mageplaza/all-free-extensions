@@ -1,204 +1,157 @@
 <?php
+/**
+ * Mageplaza
+ *
+ * NOTICE OF LICENSE
+ *
+ * This source file is subject to the Mageplaza.com license that is
+ * available through the world-wide-web at this URL:
+ * https://www.mageplaza.com/LICENSE.txt
+ *
+ * DISCLAIMER
+ *
+ * Do not edit or add to this file if you wish to upgrade this extension to newer
+ * version in the future.
+ *
+ * @category    Mageplaza
+ * @package     Mageplaza_Productslider
+ * @copyright   Copyright (c) Mageplaza (https://www.mageplaza.com/)
+ * @license     https://www.mageplaza.com/LICENSE.txt
+ */
+
 namespace Mageplaza\Productslider\Helper;
 
-use Magento\Framework\App\Config\ScopeConfigInterface;
-use Magento\Framework\ObjectManagerInterface;
-use Mageplaza\Core\Helper\AbstractData as CoreHelper;
 use Magento\Framework\App\Helper\Context;
-use Magento\Framework\Escaper;
-use Magento\Framework\Stdlib\StringUtils;
+use Magento\Framework\App\Http\Context as HttpContext;
+use Magento\Framework\ObjectManagerInterface;
+use Magento\Framework\Stdlib\DateTime\DateTime;
 use Magento\Store\Model\StoreManagerInterface;
-use Magento\Search\Model\Query as SearchQuery;
-use Magento\Search\Model\QueryFactory;
-use \Psr\Log\LoggerInterface;
+use Mageplaza\Core\Helper\AbstractData;
+use Mageplaza\Productslider\Model\ResourceModel\Slider\Collection;
+use Mageplaza\Productslider\Model\SliderFactory;
 
 /**
- * Search helper
+ * Class Data
+ * @package Mageplaza\Productslider\Helper
  */
-class Data extends CoreHelper
+class Data extends AbstractData
 {
-	/**
-	 * @var array
-	 */
-	protected $_suggestData = null;
+    const CONFIG_MODULE_PATH = 'productslider';
 
-	/**
-	 * Query object
-	 *
-	 * @var SearchQuery
-	 */
-	protected $_query;
+    /**
+     * @var DateTime
+     */
+    protected $date;
 
-	/**
-	 * Query string
-	 *
-	 * @var string
-	 */
-	protected $_queryText;
+    /**
+     * @var HttpContext
+     */
+    protected $httpContext;
 
-	/**
-	 * Note messages
-	 *
-	 * @var array
-	 */
-	protected $_messages = [];
+    /**
+     * @var SliderFactory
+     */
+    protected $sliderFactory;
 
-	/**
-	 * Magento string lib
-	 *
-	 * @var String
-	 */
-	protected $string;
+    /**
+     * Data constructor.
+     * @param Context $context
+     * @param ObjectManagerInterface $objectManager
+     * @param StoreManagerInterface $storeManager
+     * @param DateTime $date
+     * @param HttpContext $httpContext
+     * @param SliderFactory $sliderFactory
+     */
+    public function __construct(
+        Context $context,
+        ObjectManagerInterface $objectManager,
+        StoreManagerInterface $storeManager,
+        DateTime $date,
+        HttpContext $httpContext,
+        SliderFactory $sliderFactory
+    )
+    {
+        $this->date          = $date;
+        $this->httpContext   = $httpContext;
+        $this->sliderFactory = $sliderFactory;
 
-	/**
-	 * Core store config
-	 *
-	 * @var ScopeConfigInterface
-	 */
-	protected $_scopeConfig;
+        parent::__construct($context, $objectManager, $storeManager);
+    }
 
-	/**
-	 * Query factory
-	 *
-	 * @var QueryFactory
-	 */
-	protected $_queryFactory;
+    /**
+     * @return Collection
+     */
+    public function getActiveSliders()
+    {
+        /** @var Collection $collection */
+        $collection = $this->sliderFactory->create()
+            ->getCollection()
+            ->addFieldToFilter('customer_group_ids', ['finset' => $this->httpContext->getValue(\Magento\Customer\Model\Context::CONTEXT_GROUP)])
+            ->addFieldToFilter('status', 1);
 
-	/**
-	 * @var Escaper
-	 */
-	protected $_escaper;
+        $collection->getSelect()
+            ->where('FIND_IN_SET(0, store_ids) OR FIND_IN_SET(?, store_ids)', $this->storeManager->getStore()->getId())
+            ->where('from_date is null OR from_date <= ?', $this->date->date())
+            ->where('to_date is null OR to_date >= ?', $this->date->date());
 
-	/**
-	 * @var \Magento\Store\Model\StoreManagerInterface
-	 */
-	protected $_storeManager;
+        return $collection;
+    }
 
-	protected $_priceHelper;
+    /**
+     * Retrieve all configuration options for product slider
+     *
+     * @return string
+     * @throws \Zend_Serializer_Exception
+     */
+    public function getAllOptions()
+    {
+        $sliderOptions = '';
+        $allConfig     = $this->getModuleConfig('slider_design');
+        foreach ($allConfig as $key => $value) {
+            if ($key == 'item_slider') {
+                $sliderOptions = $sliderOptions . $this->getResponseValue();
+            } else if ($key != 'responsive') {
+                if(in_array($key, ['loop', 'nav', 'dots', 'lazyLoad', 'autoplay', 'autoplayHoverPause'])){
+                    $value = $value ? 'true' : 'false';
+                }
+                $sliderOptions = $sliderOptions . $key . ':' . $value . ',';
+            }
+        }
 
-	/**
-	 * link to field config number_items_slider_screen_size_1000
-	 */
-	const NUMBER_ITEMS_SLIDER_SCREEN_SIZE_1000 = 'productslider_setting/slider/number_items_slider_screen_size_1000';
+        return '{' . $sliderOptions . '}';
+    }
 
-	/**
-	 * link to field config number_items_slider_screen_size_600
-	 */
-	const NUMBER_ITEMS_SLIDER_SCREEN_SIZE_600 = 'productslider_setting/slider/number_items_slider_screen_size_600';
+    /**
+     * @return bool
+     */
+    public function isResponsive()
+    {
+        if ($this->getModuleConfig('slider_design/responsive') == 1) {
+            return true;
+        }
 
-	/**
-	 * link to field config number_items_slider_screen_size_0
-	 */
-	const NUMBER_ITEMS_SLIDER_SCREEN_SIZE_0 = 'productslider_setting/slider/number_items_slider_screen_size_0';
+        return false;
+    }
 
+    /**
+     * Retrieve responsive values for product slider
+     *
+     * @return string
+     * @throws \Zend_Serializer_Exception
+     */
+    public function getResponseValue()
+    {
+        $responsiveOptions = '';
+        $responsiveConfig = $this->isResponsive() ? $this->unserialize($this->getModuleConfig('slider_design/item_slider')) : [];
 
-	/**
-	 * link to field config loop_slider
-	 */
-	const LOOP_SLIDER = 'productslider_setting/slider/loop_slider';
+        foreach ($responsiveConfig as $config) {
+            if ($config['size'] && $config['items']) {
+                $responsiveOptions = $responsiveOptions . $config['size'] . ':{items:' . $config['items'] . '},';
+            }
+        }
 
-	/**
-	 *link to field config margin_between_items
-	 */
-	const MARGIN_BETWEEN_ITEMS = 'productslider_setting/slider/margin_between_items';
+        $responsiveOptions = rtrim($responsiveOptions, ',');
 
-	/**
-	 * "Enable Module" from system config
-	 */
-	const GENERAL_IS_ENABLED = 'productslider_setting/slider/is_enabled';
-
-	protected $objectManager;
-
-	public function __construct(
-		Context $context,
-		StringUtils $string,
-		QueryFactory $queryFactory,
-		Escaper $escaper,
-		StoreManagerInterface $storeManager,
-		ObjectManagerInterface $objectManager,
-		\Magento\Framework\Pricing\Helper\Data $priceHelper
-	)
-	{
-		$this->string        = $string;
-		$this->_scopeConfig  = $context->getScopeConfig();
-		$this->_queryFactory = $queryFactory;
-		$this->_escaper      = $escaper;
-		$this->_storeManager = $storeManager;
-		$this->logger        = $context->getLogger();
-		$this->_priceHelper  = $priceHelper;
-		$this->objectManager   = $objectManager;
-
-		parent::__construct($context, $objectManager, $storeManager);
-	}
-
-	/**
-	 * Is a minimum query length
-	 *
-	 * @return bool
-	 */
-
-	public function getEscapedQueryText()
-	{
-		return $this->_escaper->escapeHtml($this->_queryFactory->get()->getQueryText());
-	}
-
-	/**
-	 * Retrieve result page url and set "secure" param to avoid confirm
-	 * message when we submit form from secure page to unsecure
-	 *
-	 * @param   string $query
-	 * @return  string
-	 */
-	public function getResultUrl($query = null)
-	{
-		return $this->_getUrl(
-			'catalogsearch/result',
-			['_query' => [QueryFactory::QUERY_VAR_NAME => $query], '_secure' => $this->_request->isSecure()]
-		);
-	}
-
-	/**
-	 * Get config of product slider
-	 * @param $configPath
-	 * @param null $store
-	 * @return mixed
-	 */
-	public function getSliderConfig($configPath, $store = null)
-	{
-
-		return $this->_scopeConfig->getValue(
-			$configPath,
-			\Magento\Store\Model\ScopeInterface::SCOPE_STORE,
-			$store
-		);
-	}
-
-	public function isEnabled($store = null)
-	{
-		$isModuleEnabled       = $this->isModuleEnabled();
-		$isModuleOutputEnabled = $this->isModuleOutputEnabled();
-
-		return $isModuleOutputEnabled && $isModuleEnabled && $this->getSliderConfig(self::GENERAL_IS_ENABLED, $store);
-	}
-
-	public function isModuleEnabled()
-	{
-		$moduleName = "Mageplaza_Productslider";
-
-		return $this->_moduleManager->isEnabled($moduleName);
-	}
-
-	/**
-	 * @return string
-	 */
-	public function getQueryParamName()
-	{
-		return QueryFactory::QUERY_VAR_NAME;
-	}
-
-	/**
-	 * get js file url
-	 * @return string
-	 */
-
+        return 'responsive:{' . $responsiveOptions . '}';
+    }
 }

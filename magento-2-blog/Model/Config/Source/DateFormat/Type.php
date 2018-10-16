@@ -15,45 +15,50 @@
  *
  * @category    Mageplaza
  * @package     Mageplaza_Blog
- * @copyright   Copyright (c) 2016 Mageplaza (http://www.mageplaza.com/)
+ * @copyright   Copyright (c) 2018 Mageplaza (http://www.mageplaza.com/)
  * @license     https://www.mageplaza.com/LICENSE.txt
  */
+
 namespace Mageplaza\Blog\Model\Config\Source\DateFormat;
 
-class Type implements \Magento\Framework\Option\ArrayInterface
+use Magento\Framework\Option\ArrayInterface;
+
+/**
+ * Class Type
+ * @package Mageplaza\Blog\Model\Config\Source\DateFormat
+ */
+class Type implements ArrayInterface
 {
-	/**
-	 * Options getter
-	 *
-	 * @return array
-	 */
-	const DATE = 3;
-	const LONG_DATE = 2;
-	const DEFAULT_DATE = 1;
-	const FULL_DATE = 4;
+    /**
+     * Options getter
+     *
+     * @return array
+     */
 
-	public function toOptionArray()
-	{
-		return [
-			['value' => self::DEFAULT_DATE, 'label' => __('yyyy - mm - dd')],
-			['value' => self::LONG_DATE, 'label' => __('yyyy month dd')],
-			['value' => self::DATE, 'label' => __('dd/mm/yyyy')],
-			['value' => self::FULL_DATE, 'label' => __('yyyy/mm/dd hh:mm:ss')]
-		];
-	}
+    public function toOptionArray()
+    {
+        $dateArray = [];
+        $type = [
+            'F j, Y',
+            'Y-m-d',
+            'm/d/Y',
+            'd/m/Y',
+            'F j, Y g:i a',
+            'F j, Y g:i A',
+            'Y-m-d g:i a',
+            'Y-m-d g:i A',
+            'd/m/Y g:i a',
+            'd/m/Y g:i A',
+            'm/d/Y H:i',
+            'd/m/Y H:i',
+        ];
+        foreach ($type as $item) {
+            $dateArray[] = [
+                'value' => $item,
+                'label' => $item . ' (' . date($item) . ')'
+            ];
+        }
 
-	/**
-	 * Get options in "key-value" format
-	 *
-	 * @return array
-	 */
-	public function toArray()
-	{
-		return [
-			self::FULL_DATE => __('yyyy/mm/dd hh:mm:ss'),
-			self::DEFAULT_DATE => __('yyyy - mm - dd'),
-			self::DATE => __('dd/mm/yyyy'),
-			self::LONG_DATE=> __('yyyy month dd')
-		];
-	}
+        return $dateArray;
+    }
 }

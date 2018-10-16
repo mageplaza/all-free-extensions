@@ -15,56 +15,69 @@
  *
  * @category    Mageplaza
  * @package     Mageplaza_Blog
- * @copyright   Copyright (c) 2016 Mageplaza (http://www.mageplaza.com/)
+ * @copyright   Copyright (c) 2018 Mageplaza (http://www.mageplaza.com/)
  * @license     https://www.mageplaza.com/LICENSE.txt
  */
+
 namespace Mageplaza\Blog\Block\Adminhtml\Tag\Edit\Tab;
 
-class Post extends \Magento\Backend\Block\Widget\Grid\Extended implements \Magento\Backend\Block\Widget\Tab\TabInterface
+use Magento\Backend\Block\Template\Context;
+use Magento\Backend\Block\Widget\Grid\Extended;
+use Magento\Backend\Block\Widget\Tab\TabInterface;
+use Magento\Backend\Helper\Data;
+use Magento\Framework\Registry;
+use Mageplaza\Blog\Model\PostFactory;
+use Mageplaza\Blog\Model\ResourceModel\Post\CollectionFactory;
+
+/**
+ * Class Post
+ * @package Mageplaza\Blog\Block\Adminhtml\Tag\Edit\Tab
+ */
+class Post extends Extended implements TabInterface
 {
     /**
      * Post collection factory
      *
      * @var \Mageplaza\Blog\Model\ResourceModel\Post\CollectionFactory
      */
-	public $postCollectionFactory;
+    public $postCollectionFactory;
 
     /**
      * Registry
      *
      * @var \Magento\Framework\Registry
      */
-	public $coreRegistry;
+    public $coreRegistry;
 
     /**
      * Post factory
      *
      * @var \Mageplaza\Blog\Model\PostFactory
      */
-	public $postFactory;
+    public $postFactory;
 
     /**
-     * constructor
-     *
-     * @param \Mageplaza\Blog\Model\ResourceModel\Post\CollectionFactory $postCollectionFactory
-     * @param \Magento\Framework\Registry $coreRegistry
-     * @param \Mageplaza\Blog\Model\PostFactory $postFactory
+     * Post constructor.
      * @param \Magento\Backend\Block\Template\Context $context
+     * @param \Magento\Framework\Registry $coreRegistry
      * @param \Magento\Backend\Helper\Data $backendHelper
+     * @param \Mageplaza\Blog\Model\PostFactory $postFactory
+     * @param \Mageplaza\Blog\Model\ResourceModel\Post\CollectionFactory $postCollectionFactory
      * @param array $data
      */
     public function __construct(
-        \Mageplaza\Blog\Model\ResourceModel\Post\CollectionFactory $postCollectionFactory,
-        \Magento\Framework\Registry $coreRegistry,
-        \Mageplaza\Blog\Model\PostFactory $postFactory,
-        \Magento\Backend\Block\Template\Context $context,
-        \Magento\Backend\Helper\Data $backendHelper,
+        Context $context,
+        Registry $coreRegistry,
+        Data $backendHelper,
+        PostFactory $postFactory,
+        CollectionFactory $postCollectionFactory,
         array $data = []
-    ) {
-    
+    )
+    {
+        $this->coreRegistry = $coreRegistry;
+        $this->postFactory = $postFactory;
         $this->postCollectionFactory = $postCollectionFactory;
-        $this->coreRegistry          = $coreRegistry;
-        $this->postFactory           = $postFactory;
+
         parent::__construct($context, $backendHelper, $data);
     }
 
@@ -78,57 +91,45 @@ class Post extends \Magento\Backend\Block\Widget\Grid\Extended implements \Magen
         $this->setDefaultSort('position');
         $this->setDefaultDir('ASC');
         $this->setUseAjax(true);
+
         if ($this->getTag()->getId()) {
-            $this->setDefaultFilter(['in_posts'=>1]);
+            $this->setDefaultFilter(['in_posts' => 1]);
         }
     }
 
     /**
-     * prepare the collection
-
-     * @return $this
+     * @inheritdoc
      */
     protected function _prepareCollection()
     {
         /** @var \Mageplaza\Blog\Model\ResourceModel\Post\Collection $collection */
         $collection = $this->postCollectionFactory->create();
-        if ($this->getTag()->getId()) {
-            $constraint = 'related.tag_id='.$this->getTag()->getId();
-        } else {
-            $constraint = 'related.tag_id=0';
-        }
         $collection->getSelect()->joinLeft(
             ['related' => $collection->getTable('mageplaza_blog_post_tag')],
-            'related.post_id=main_table.post_id AND '.$constraint,
+            'related.post_id=main_table.post_id AND related.tag_id=' . (int)$this->getRequest()->getParam('id', 0),
             ['position']
         );
+
         $this->setCollection($collection);
-        parent::_prepareCollection();
-        return $this;
+
+        return parent::_prepareCollection();
     }
 
     /**
      * @return $this
-     */
-    protected function _prepareMassaction()
-    {
-        return $this;
-    }
-
-    /**
-     * @return $this
+     * @throws \Exception
      */
     protected function _prepareColumns()
     {
         $this->addColumn(
             'in_posts',
             [
-                'header_css_class'  => 'a-center',
-                'type'   => 'checkbox',
-                'name'   => 'in_post',
+                'header_css_class' => 'a-center',
+                'type' => 'checkbox',
+                'name' => 'in_post',
                 'values' => $this->_getSelectedPosts(),
-                'align'  => 'center',
-                'index'  => 'post_id'
+                'align' => 'center',
+                'index' => 'post_id'
             ]
         );
         $this->addColumn(
@@ -142,7 +143,6 @@ class Post extends \Magento\Backend\Block\Widget\Grid\Extended implements \Magen
                 'column_css_class' => 'col-id'
             ]
         );
-
         $this->addColumn(
             'title',
             [
@@ -152,40 +152,40 @@ class Post extends \Magento\Backend\Block\Widget\Grid\Extended implements \Magen
                 'column_css_class' => 'col-name'
             ]
         );
-
         $this->addColumn(
             'position',
             [
                 'header' => __('Position'),
-                'name'   => 'position',
-                'width'  => 60,
-                'type'   => 'number',
+                'name' => 'position',
+                'width' => 60,
+                'type' => 'number',
                 'validate_class' => 'validate-number',
                 'index' => 'position',
-                'editable'  => true,
+                'editable' => true,
             ]
         );
+
         return $this;
     }
 
     /**
      * Retrieve selected Posts
-
      * @return array
      */
     protected function _getSelectedPosts()
     {
-        $posts = $this->getTagPosts();
+        $posts = $this->getRequest()->getPost('tag_posts', null);
         if (!is_array($posts)) {
             $posts = $this->getTag()->getPostsPosition();
+
             return array_keys($posts);
         }
+
         return $posts;
     }
 
     /**
      * Retrieve selected Posts
-
      * @return array
      */
     public function getSelectedPosts()
@@ -198,6 +198,7 @@ class Post extends \Magento\Backend\Block\Widget\Grid\Extended implements \Magen
                 $selected[$key] = ['position' => $value];
             }
         }
+
         return $selected;
     }
 
@@ -217,12 +218,7 @@ class Post extends \Magento\Backend\Block\Widget\Grid\Extended implements \Magen
      */
     public function getGridUrl()
     {
-        return $this->getUrl(
-            '*/*/postsGrid',
-            [
-                'tag_id' => $this->getTag()->getId()
-            ]
-        );
+        return $this->getUrl('*/*/postsGrid', ['id' => $this->getTag()->getId()]);
     }
 
     /**
@@ -236,6 +232,7 @@ class Post extends \Magento\Backend\Block\Widget\Grid\Extended implements \Magen
     /**
      * @param \Magento\Backend\Block\Widget\Grid\Column $column
      * @return $this
+     * @throws \Magento\Framework\Exception\LocalizedException
      */
     protected function _addColumnFilterToCollection($column)
     {
@@ -245,15 +242,16 @@ class Post extends \Magento\Backend\Block\Widget\Grid\Extended implements \Magen
                 $postIds = 0;
             }
             if ($column->getFilter()->getValue()) {
-                $this->getCollection()->addFieldToFilter('main_table.post_id', ['in'=>$postIds]);
+                $this->getCollection()->addFieldToFilter('main_table.post_id', ['in' => $postIds]);
             } else {
                 if ($postIds) {
-                    $this->getCollection()->addFieldToFilter('main_table.post_id', ['nin'=>$postIds]);
+                    $this->getCollection()->addFieldToFilter('main_table.post_id', ['nin' => $postIds]);
                 }
             }
         } else {
             parent::_addColumnFilterToCollection($column);
         }
+
         return $this;
     }
 

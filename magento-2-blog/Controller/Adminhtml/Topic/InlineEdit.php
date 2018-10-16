@@ -15,42 +15,53 @@
  *
  * @category    Mageplaza
  * @package     Mageplaza_Blog
- * @copyright   Copyright (c) 2016 Mageplaza (http://www.mageplaza.com/)
+ * @copyright   Copyright (c) 2018 Mageplaza (http://www.mageplaza.com/)
  * @license     https://www.mageplaza.com/LICENSE.txt
  */
+
 namespace Mageplaza\Blog\Controller\Adminhtml\Topic;
 
-abstract class InlineEdit extends \Magento\Backend\App\Action
+use Magento\Backend\App\Action;
+use Magento\Backend\App\Action\Context;
+use Magento\Framework\Controller\Result\JsonFactory;
+use Magento\Framework\Exception\LocalizedException;
+use Mageplaza\Blog\Model\TopicFactory;
+
+/**
+ * Class InlineEdit
+ * @package Mageplaza\Blog\Controller\Adminhtml\Topic
+ */
+class InlineEdit extends Action
 {
     /**
      * JSON Factory
      *
-     * @var \Magento\Framework\Controller\Result\JsonFactory
+     * @var JsonFactory
      */
-	public $jsonFactory;
+    public $jsonFactory;
 
     /**
      * Topic Factory
      *
-     * @var \Mageplaza\Blog\Model\TopicFactory
+     * @var TopicFactory
      */
-	public $topicFactory;
+    public $topicFactory;
 
     /**
-     * constructor
-     *
-     * @param \Magento\Framework\Controller\Result\JsonFactory $jsonFactory
-     * @param \Mageplaza\Blog\Model\TopicFactory $topicFactory
-     * @param \Magento\Backend\App\Action\Context $context
+     * InlineEdit constructor.
+     * @param Context $context
+     * @param JsonFactory $jsonFactory
+     * @param TopicFactory $topicFactory
      */
     public function __construct(
-        \Magento\Framework\Controller\Result\JsonFactory $jsonFactory,
-        \Mageplaza\Blog\Model\TopicFactory $topicFactory,
-        \Magento\Backend\App\Action\Context $context
-    ) {
-    
-        $this->jsonFactory  = $jsonFactory;
+        Context $context,
+        JsonFactory $jsonFactory,
+        TopicFactory $topicFactory
+    )
+    {
+        $this->jsonFactory = $jsonFactory;
         $this->topicFactory = $topicFactory;
+
         parent::__construct($context);
     }
 
@@ -72,27 +83,26 @@ abstract class InlineEdit extends \Magento\Backend\App\Action
             ]);
         }
 
-		$key = array_keys($postItems);
-		$topicId = !empty($key) ? (int) $key[0] : '';
-		/** @var \Mageplaza\Blog\Model\Topic $topic */
-		$topic = $this->topicFactory->create()->load($topicId);
-		try {
-			$topicData = $postItems[$topicId];
-			$topic->addData($topicData);
-			$topic->save();
-		} catch (\Magento\Framework\Exception\LocalizedException $e) {
-			$messages[] = $this->getErrorWithTopicId($topic, $e->getMessage());
-			$error = true;
-		} catch (\RuntimeException $e) {
-			$messages[] = $this->getErrorWithTopicId($topic, $e->getMessage());
-			$error = true;
-		} catch (\Exception $e) {
-			$messages[] = $this->getErrorWithTopicId(
-				$topic,
-				__('Something went wrong while saving the Topic.')
-			);
-			$error = true;
-		}
+        $key = array_keys($postItems);
+        $topicId = !empty($key) ? (int)$key[0] : '';
+        /** @var \Mageplaza\Blog\Model\Topic $topic */
+        $topic = $this->topicFactory->create()->load($topicId);
+        try {
+            $topic->addData($postItems[$topicId])
+                ->save();
+        } catch (LocalizedException $e) {
+            $messages[] = $this->getErrorWithTopicId($topic, $e->getMessage());
+            $error = true;
+        } catch (\RuntimeException $e) {
+            $messages[] = $this->getErrorWithTopicId($topic, $e->getMessage());
+            $error = true;
+        } catch (\Exception $e) {
+            $messages[] = $this->getErrorWithTopicId(
+                $topic,
+                __('Something went wrong while saving the Topic.')
+            );
+            $error = true;
+        }
 
         return $resultJson->setData([
             'messages' => $messages,
@@ -107,7 +117,7 @@ abstract class InlineEdit extends \Magento\Backend\App\Action
      * @param string $errorText
      * @return string
      */
-	public function getErrorWithTopicId(\Mageplaza\Blog\Model\Topic $topic, $errorText)
+    public function getErrorWithTopicId(\Mageplaza\Blog\Model\Topic $topic, $errorText)
     {
         return '[Topic ID: ' . $topic->getId() . '] ' . $errorText;
     }

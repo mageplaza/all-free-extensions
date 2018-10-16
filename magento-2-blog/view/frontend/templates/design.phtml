@@ -1,0 +1,119 @@
+<?php
+/**
+ * Mageplaza
+ *
+ * NOTICE OF LICENSE
+ *
+ * This source file is subject to the Mageplaza.com license that is
+ * available through the world-wide-web at this URL:
+ * https://www.mageplaza.com/LICENSE.txt
+ *
+ * DISCLAIMER
+ *
+ * Do not edit or add to this file if you wish to upgrade this extension to newer
+ * version in the future.
+ *
+ * @category    Mageplaza
+ * @package     Mageplaza_Blog
+ * @copyright   Copyright (c) 2018 Mageplaza (http://www.mageplaza.com/)
+ * @license     https://www.mageplaza.com/LICENSE.txt
+ */
+
+/** @var \Mageplaza\Blog\Block\Design $block */
+?>
+
+<script type="text/javascript">
+    require(['jquery'], function ($) {
+        var isSidebarRight = <?php echo $block->isSidebarRight(); ?>,
+            body = $('body');
+
+        body.removeClass('page-layout-1column');
+        if (isSidebarRight) {
+            body.addClass('page-layout-2columns-right');
+        } else {
+            body.addClass('page-layout-2columns-left');
+        }
+
+        <?php if ($block->getCurrentTheme() == "Etheme/yourstore") :?>
+        body.addClass('mpblog-etheme-yourstore');
+        <?php endif; ?>
+    });
+</script>
+
+<?php $color = $block->getHelper()->getBlogConfig('general/font_color'); ?>
+<style type="text/css">
+    #mpblog-list-container a{
+        text-decoration: none;
+    }
+
+    /*Post List Content Css*/
+    .post-info-wraper h2.mp-post-title a,
+    .about-admin h4.admin-title a,
+    .mp-post-meta-info a.mp-read-more,
+    .mp-post-info a.mp-info,
+    ul.menu-categories a.list-categories:hover,
+    .products-same-post a.product-item-link:hover,
+    a.mp-relate-link,
+    .mpblog-product-name{
+        color: <?php echo $color ?> !important;
+    }
+
+    a.label.label-default.tags-list:hover,
+    a.label.label-default.tags-list:focus {
+        background: <?php echo $color ?>;
+        color: #fff !important;
+    }
+
+    .list-post-tabs a{
+        background: #fbfbfb;
+        color: <?php echo $color ?>;
+    }
+
+    /*Site Map CSS*/
+    .mp-sidebar a.sitemap-link,
+    .menu-archives a.list-archives:hover {
+        text-decoration: none !important;
+        color: <?php echo $color ?> !important;
+    }
+
+    /*Comment CSS*/
+    button.default-cmt__content__cmt-block__cmt-box__cmt-btn__btn-submit {
+        background: <?php echo $color ?> !important;
+        color: #fff;
+        border-color: #999 !important;
+    }
+
+    span.cmt-row__cmt-username {
+        font-weight: 600;
+        color: <?php echo $color ?>;
+    }
+    a.interactions__btn-actions.mpblog-like{
+        color: #333333
+    }
+    a.interactions__btn-actions.mpblog-liked{
+        color: <?php echo $color ?> ;
+    }
+    a.interactions__btn-actions {
+        color: <?php echo $color ?>;
+
+    }
+
+
+
+    /*Widget CSS*/
+    .widget-title a {
+        color: <?php echo $color ?>;
+        font-size: 26px;
+    }
+
+    /*Author CSS*/
+    .author-name h3 {
+        color: <?php echo $color ?>;
+        text-align: center;
+    }
+
+    /*Comment CSS*/
+
+
+</style>
+

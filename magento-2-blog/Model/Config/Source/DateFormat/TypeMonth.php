@@ -15,42 +15,36 @@
  *
  * @category    Mageplaza
  * @package     Mageplaza_Blog
- * @copyright   Copyright (c) 2016 Mageplaza (http://www.mageplaza.com/)
+ * @copyright   Copyright (c) 2018 Mageplaza (http://www.mageplaza.com/)
  * @license     https://www.mageplaza.com/LICENSE.txt
  */
+
 namespace Mageplaza\Blog\Model\Config\Source\DateFormat;
 
-class TypeMonth implements \Magento\Framework\Option\ArrayInterface
+use Magento\Framework\Option\ArrayInterface;
+
+/**
+ * Class TypeMonth
+ * @package Mageplaza\Blog\Model\Config\Source\DateFormat
+ */
+class TypeMonth implements ArrayInterface
 {
-	/**
-	 * Options getter
-	 *
-	 * @return array
-	 */
-	const DATE = 3;
-	const LONG_DATE = 2;
-	const DEFAULT_DATE = 1;
+    /**
+     * Options getter
+     *
+     * @return array
+     */
+    public function toOptionArray()
+    {
+        $dateArray = [];
+        $type = ['F , Y', 'Y - m', 'm / Y', 'M  Y'];
+        foreach ($type as $item) {
+            $dateArray [] = [
+                'value' => $item,
+                'label' => $item . ' (' . date($item) . ')'
+            ];
+        }
 
-	public function toOptionArray()
-	{
-		return [
-			['value' => self::DEFAULT_DATE, 'label' => __('mm - yyyy')],
-			['value' => self::LONG_DATE, 'label' => __('yyyy - mm')],
-			['value' => self::DATE, 'label' => __('month yyyy')]
-		];
-	}
-
-	/**
-	 * Get options in "key-value" format
-	 *
-	 * @return array
-	 */
-	public function toArray()
-	{
-		return [
-			self::LONG_DATE => __('yyyy - mm'),
-			self::DEFAULT_DATE => __('mm - yyyy'),
-			self::DATE => __('month yyyy')
-		];
-	}
+        return $dateArray;
+    }
 }

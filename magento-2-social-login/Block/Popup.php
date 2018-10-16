@@ -15,7 +15,7 @@
  *
  * @category    Mageplaza
  * @package     Mageplaza_SocialLogin
- * @copyright   Copyright (c) 2016 Mageplaza (http://www.mageplaza.com/)
+ * @copyright   Copyright (c) Mageplaza (http://www.mageplaza.com/)
  * @license     https://www.mageplaza.com/LICENSE.txt
  */
 
@@ -28,140 +28,130 @@ use Mageplaza\SocialLogin\Helper\Data as HelperData;
 
 /**
  * Class Popup
+ *
  * @package Mageplaza\SocialLogin\Block
  */
 class Popup extends Template
 {
-	/**
-	 * @type \Magento\Store\Model\StoreManagerInterface
-	 */
-	protected $storeManager;
+    /**
+     * @type \Mageplaza\SocialLogin\Helper\Data
+     */
+    protected $helperData;
 
-	/**
-	 * @type \Mageplaza\SocialLogin\Helper\Data
-	 */
-	protected $helperData;
+    /**
+     * @type \Magento\Customer\Model\Session
+     */
+    protected $customerSession;
 
-	/**
-	 * @type \Magento\Customer\Model\Session
-	 */
-	protected $customerSession;
+    /**
+     * @param \Magento\Framework\View\Element\Template\Context $context
+     * @param \Mageplaza\SocialLogin\Helper\Data $helperData
+     * @param \Magento\Customer\Model\Session $customerSession
+     * @param array $data
+     */
+    public function __construct(
+        Context $context,
+        HelperData $helperData,
+        CustomerSession $customerSession,
+        array $data = []
+    )
+    {
+        $this->helperData      = $helperData;
+        $this->customerSession = $customerSession;
 
-	/**
-	 * @param \Magento\Framework\View\Element\Template\Context $context
-	 * @param \Mageplaza\SocialLogin\Helper\Data $helperData
-	 * @param \Magento\Customer\Model\Session $customerSession
-	 * @param array $data
-	 */
-	public function __construct(
-		Context $context,
-		HelperData $helperData,
-		CustomerSession $customerSession,
-		array $data = []
-	)
-	{
-		$this->helperData      = $helperData;
-		$this->customerSession = $customerSession;
-		$this->storeManager    = $context->getStoreManager();
-		parent::__construct($context, $data);
-	}
+        parent::__construct($context, $data);
+    }
 
-	/**
-	 * Is enable popup
-	 *
-	 * @return bool
-	 */
-	public function isEnabled()
-	{
-		return $this->helperData->isEnabled() && !$this->customerSession->isLoggedIn() && $this->helperData->getGeneralConfig('popup_login');
-	}
+    /**
+     * Is enable popup
+     *
+     * @return bool
+     */
+    public function isEnabled()
+    {
+        return $this->helperData->isEnabled() && !$this->customerSession->isLoggedIn() && $this->helperData->getConfigGeneral('popup_login');
+    }
 
-	/**
-	 * Js params
-	 *
-	 * @return string
-	 */
-	public function getFormParams()
-	{
-		$params = [
-			'headerLink'    => $this->getHeaderLink(),
-			'popupEffect'   => $this->getPopupEffect(),
-			'formLoginUrl'  => $this->getFormLoginUrl(),
-			'forgotFormUrl' => $this->getForgotFormUrl(),
-			'createFormUrl' => $this->getCreateFormUrl()
-		];
+    /**
+     * Js params
+     *
+     * @return string
+     */
+    public function getFormParams()
+    {
+        $params = [
+            'headerLink'    => $this->getHeaderLink(),
+            'popupEffect'   => $this->getPopupEffect(),
+            'formLoginUrl'  => $this->getFormLoginUrl(),
+            'forgotFormUrl' => $this->getForgotFormUrl(),
+            'createFormUrl' => $this->getCreateFormUrl(),
+            'fakeEmailUrl'  => $this->getFakeEmailUrl()
+        ];
 
-		return json_encode($params);
-	}
+        return json_encode($params);
+    }
 
-	public function getHeaderLink()
-	{
-		$links = $this->helperData->getGeneralConfig('link_trigger');
+    /**
+     * @return string
+     */
+    public function getHeaderLink()
+    {
+        $links = $this->helperData->getConfigGeneral('link_trigger');
 
-		return $links ?: '.header .links, .section-item-content .header.links';
-	}
+        return $links ?: '.header .links, .section-item-content .header.links';
+    }
 
-	/**
-	 * @return mixed
-	 */
-	public function getPopupEffect()
-	{
-		return $this->helperData->getPopupEffect();
-	}
+    /**
+     * @return mixed
+     */
+    public function getPopupEffect()
+    {
+        return $this->helperData->getPopupEffect();
+    }
 
-	/**
-	 * get Social Login Form Url
-	 *
-	 * @return string
-	 */
-	public function getFormLoginUrl()
-	{
-		return $this->getUrl('customer/ajax/login', ['_secure' => $this->isSecure()]);
-	}
+    /**
+     * get Social Login Form Url
+     *
+     * @return string
+     */
+    public function getFormLoginUrl()
+    {
+        return $this->getUrl('customer/ajax/login', ['_secure' => $this->isSecure()]);
+    }
 
-	/**
-	 * get is secure url
-	 *
-	 * @return mixed
-	 */
-	public function isSecure()
-	{
-		return $this->helperData->isSecure();
-	}
+    /**
+     * @return string
+     */
+    public function getFakeEmailUrl()
+    {
+        return $this->getUrl('sociallogin/social/email', ['_secure' => $this->isSecure()]);
+    }
 
-	/**
-	 * @return string
-	 */
-	public function getForgotFormUrl()
-	{
-		return $this->getUrl('sociallogin/popup/forgot', ['_secure' => $this->isSecure()]);
-	}
+    /**
+     * @return string
+     */
+    public function getForgotFormUrl()
+    {
+        return $this->getUrl('sociallogin/popup/forgot', ['_secure' => $this->isSecure()]);
+    }
 
-	/**
-	 *  get Social Login Form Create Url
-	 *
-	 * @return string
-	 */
-	public function getCreateFormUrl()
-	{
-		return $this->getUrl('sociallogin/popup/create', ['_secure' => $this->isSecure()]);
-	}
+    /**
+     *  get Social Login Form Create Url
+     *
+     * @return string
+     */
+    public function getCreateFormUrl()
+    {
+        return $this->getUrl('sociallogin/popup/create', ['_secure' => $this->isSecure()]);
+    }
 
-	/**
-	 * @return mixed
-	 */
-	public function getStyleColor()
-	{
-		return $this->helperData->getStyleManagement();
-	}
-
-	/**
-	 * @return mixed
-	 */
-	public function getCustomCss()
-	{
-		$storeId = $this->storeManager->getStore()->getId(); //add
-
-		return $this->helperData->getCustomCss($storeId);
-	}
+    /**
+     * get is secure url
+     *
+     * @return mixed
+     */
+    public function isSecure()
+    {
+        return (bool) $this->helperData->isSecure();
+    }
 }

@@ -15,68 +15,81 @@
  *
  * @category    Mageplaza
  * @package     Mageplaza_Blog
- * @copyright   Copyright (c) 2016 Mageplaza (http://www.mageplaza.com/)
+ * @copyright   Copyright (c) 2018 Mageplaza (http://www.mageplaza.com/)
  * @license     https://www.mageplaza.com/LICENSE.txt
  */
+
 namespace Mageplaza\Blog\Controller\Adminhtml;
 
-abstract class Tag extends \Magento\Backend\App\Action
+use Magento\Backend\App\Action;
+use Magento\Backend\App\Action\Context;
+use Magento\Framework\Registry;
+use Mageplaza\Blog\Model\TagFactory;
+
+/**
+ * Class Tag
+ * @package Mageplaza\Blog\Controller\Adminhtml
+ */
+abstract class Tag extends Action
 {
+    /** Authorization level of a basic admin session */
+    const ADMIN_RESOURCE = 'Mageplaza_Blog::tag';
+
     /**
      * Tag Factory
      *
      * @var \Mageplaza\Blog\Model\TagFactory
      */
-	public $tagFactory;
+    public $tagFactory;
 
     /**
      * Core registry
      *
      * @var \Magento\Framework\Registry
      */
-	public $coreRegistry;
+    public $coreRegistry;
 
     /**
-     * Result redirect factory
-     *
-     * @var \Magento\Backend\Model\View\Result\RedirectFactory
-     */
-	public $resultRedirectFactory;
-
-    /**
-     * constructor
-     *
-     * @param \Mageplaza\Blog\Model\TagFactory $tagFactory
-     * @param \Magento\Framework\Registry $coreRegistry
-     * @param \Magento\Backend\Model\View\Result\RedirectFactory $resultRedirectFactory
+     * Tag constructor.
      * @param \Magento\Backend\App\Action\Context $context
+     * @param \Magento\Framework\Registry $coreRegistry
+     * @param \Mageplaza\Blog\Model\TagFactory $tagFactory
      */
     public function __construct(
-        \Mageplaza\Blog\Model\TagFactory $tagFactory,
-        \Magento\Framework\Registry $coreRegistry,
-        \Magento\Backend\App\Action\Context $context
-    ) {
-    
-        $this->tagFactory            = $tagFactory;
-        $this->coreRegistry          = $coreRegistry;
-        $this->resultRedirectFactory = $context->getRedirect();
+        Context $context,
+        Registry $coreRegistry,
+        TagFactory $tagFactory
+    )
+    {
+        $this->tagFactory = $tagFactory;
+        $this->coreRegistry = $coreRegistry;
+
         parent::__construct($context);
     }
 
     /**
-     * Init Tag
-     *
-     * @return \Mageplaza\Blog\Model\Tag
+     * @param bool $register
+     * @return bool|\Mageplaza\Blog\Model\Tag
      */
-	public function initTag()
+    protected function initTag($register = false)
     {
-        $tagId  = (int) $this->getRequest()->getParam('tag_id');
+        $tagId = (int)$this->getRequest()->getParam('id');
+
         /** @var \Mageplaza\Blog\Model\Tag $tag */
-        $tag    = $this->tagFactory->create();
+        $tag = $this->tagFactory->create();
         if ($tagId) {
             $tag->load($tagId);
+            if (!$tag->getId()) {
+                $this->messageManager->addErrorMessage(__('This tag no longer exists.'));
+
+                return false;
+            }
         }
-        $this->coreRegistry->register('mageplaza_blog_tag', $tag);
+
+        if ($register) {
+            $this->coreRegistry->register('mageplaza_blog_tag', $tag);
+        }
+
         return $tag;
     }
 }

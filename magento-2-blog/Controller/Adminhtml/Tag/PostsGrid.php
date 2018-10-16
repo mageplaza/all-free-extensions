@@ -15,15 +15,16 @@
  *
  * @category    Mageplaza
  * @package     Mageplaza_Blog
- * @copyright   Copyright (c) 2016 Mageplaza (http://www.mageplaza.com/)
+ * @copyright   Copyright (c) 2018 Mageplaza (http://www.mageplaza.com/)
  * @license     https://www.mageplaza.com/LICENSE.txt
  */
+
 namespace Mageplaza\Blog\Controller\Adminhtml\Tag;
 
-class PostsGrid extends \Mageplaza\Blog\Controller\Adminhtml\Tag\Posts
+/**
+ * Class PostsGrid
+ * @package Mageplaza\Blog\Controller\Adminhtml\Tag
+ */
+class PostsGrid extends Posts
 {
-	public function getTags()
-	{
-		return null;
-	}
 }

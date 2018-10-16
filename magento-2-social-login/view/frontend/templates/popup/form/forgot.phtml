@@ -15,7 +15,7 @@
  *
  * @category    Mageplaza
  * @package     Mageplaza_SocialLogin
- * @copyright   Copyright (c) 2016 Mageplaza (http://www.mageplaza.com/)
+ * @copyright   Copyright (c) Mageplaza (http://www.mageplaza.com/)
  * @license     https://www.mageplaza.com/LICENSE.txt
  */
 ?>
@@ -31,7 +31,9 @@
                     <div class="field email required">
                         <label for="email_address" class="label"><span><?php echo __('Email') ?></span></label>
                         <div class="control">
-                            <input type="email" name="email" alt="email" id="email_address" class="input-text" value="<?php echo $block->escapeHtml($block->getEmailValue()) ?>" data-validate="{required:true, 'validate-email':true}" />
+                            <input type="email" name="email" alt="email" id="email_address_forgot" class="input-text"
+                                   value="<?php echo $block->escapeHtml($block->getEmailValue()) ?>"
+                                   data-validate="{required:true, 'validate-email':true}"/>
                         </div>
                     </div>
                     <?php echo $block->getChildHtml('form_additional_info'); ?>
@@ -39,10 +41,12 @@
                 </fieldset>
                 <div class="actions-toolbar">
                     <div class="primary">
-                        <button type="button" class="action send primary"><span><?php echo __('Submit') ?></span></button>
-                    </div>
-                    <div class="secondary">
-                        <a class="action back" href="#"><span><?php echo __('Go back') ?></span></a>
+                        <button type="button" id="bnt-social-login-forgot" class="action send primary">
+                            <span><?php echo __('Submit') ?></span>
+                        </button>
+                        <div class="secondary">
+                            <a class="action back" href="#"><span><?php echo __('Go back') ?></span></a>
+                        </div>
                     </div>
                 </div>
             </form>

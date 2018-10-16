@@ -16,7 +16,7 @@
  *
  * @category    Mageplaza
  * @package     Mageplaza_SocialLogin
- * @copyright   Copyright (c) 2016 Mageplaza (http://www.mageplaza.com/)
+ * @copyright   Copyright (c) Mageplaza (http://www.mageplaza.com/)
  * @license     https://www.mageplaza.com/LICENSE.txt
  */
 -->
@@ -27,7 +27,7 @@
                 <resource id="Magento_Backend::stores">
                     <resource id="Magento_Backend::stores_settings">
                         <resource id="Magento_Config::config">
-                            <resource id="Mageplaza_SocialLogin::configuration" title="Social Login"/>
+                            <resource id="Mageplaza_SocialLogin::configuration" title="Mageplaza Social Login" sortOrder="10"/>
                         </resource>
                     </resource>
                 </resource>

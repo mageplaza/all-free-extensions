@@ -15,52 +15,69 @@
  *
  * @category    Mageplaza
  * @package     Mageplaza_Blog
- * @copyright   Copyright (c) 2016 Mageplaza (http://www.mageplaza.com/)
+ * @copyright   Copyright (c) 2018 Mageplaza (http://www.mageplaza.com/)
  * @license     https://www.mageplaza.com/LICENSE.txt
  */
+
 namespace Mageplaza\Blog\Model\ResourceModel;
 
-class Comment extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
+use Magento\Framework\Model\ResourceModel\Db\AbstractDb;
+
+/**
+ * Class Comment
+ * @package Mageplaza\Blog\Model\ResourceModel
+ */
+class Comment extends AbstractDb
 {
-	/**
-	 * Date model
-	 *
-	 * @var \Magento\Framework\Stdlib\DateTime\DateTime
-	 */
-	public $date;
+    /**
+     * Initialize resource model
+     *
+     * @return void
+     */
+    protected function _construct()
+    {
+        $this->_init('mageplaza_blog_comment', 'comment_id');
+    }
 
-	/**
-	 * Event Manager
-	 *
-	 * @var \Magento\Framework\Event\ManagerInterface
-	 */
-	public $eventManager;
+    /**
+     * @param \Magento\Framework\Model\AbstractModel $object
+     * @return $this
+     */
+    protected function _beforeSave(\Magento\Framework\Model\AbstractModel $object)
+    {
+        if (is_array($object->getStoreIds())) {
+            $object->setStoreIds(implode(',', $object->getStoreIds()));
+        }
 
-	/**
-	 * constructor
-	 *
-	 * @param \Magento\Framework\Stdlib\DateTime\DateTime $date
-	 * @param \Magento\Framework\Event\ManagerInterface $eventManager
-	 * @param \Magento\Framework\Model\ResourceModel\Db\Context $context
-	 */
-	public function __construct(
-		\Magento\Framework\Stdlib\DateTime\DateTime $date,
-		\Magento\Framework\Event\ManagerInterface $eventManager,
-		\Magento\Framework\Model\ResourceModel\Db\Context $context
-	)
-	{
-		$this->date         = $date;
-		$this->eventManager = $eventManager;
-		parent::__construct($context);
-	}
+        return $this;
+    }
 
-	/**
-	 * Initialize resource model
-	 *
-	 * @return void
-	 */
-	protected function _construct()
-	{
-		$this->_init('mageplaza_blog_comment', 'comment_id');
-	}
+    /**
+     * Check is imported category
+     *
+     * @param $importSource
+     * @param $oldId
+     * @return string
+     * @throws \Magento\Framework\Exception\LocalizedException
+     */
+    public function isImported($importSource, $oldId)
+    {
+        $adapter = $this->getConnection();
+        $select = $adapter->select()
+            ->from($this->getMainTable(), 'comment_id')
+            ->where('import_source = :import_source');
+        $binds = ['import_source' => $importSource . '-' . $oldId];
+
+        return $adapter->fetchOne($select, $binds);
+    }
+
+    /**
+     * @param $importType
+     * @throws \Magento\Framework\Exception\LocalizedException
+     */
+    public function deleteImportItems($importType)
+    {
+        $adapter = $this->getConnection();
+        $adapter->delete($this->getMainTable(), "`import_source` LIKE '" . $importType . "%'");
+    }
 }

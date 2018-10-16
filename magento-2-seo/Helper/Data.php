@@ -1,218 +1,135 @@
 <?php
+/**
+ * Mageplaza
+ *
+ * NOTICE OF LICENSE
+ *
+ * This source file is subject to the Mageplaza.com license that is
+ * available through the world-wide-web at this URL:
+ * https://www.mageplaza.com/LICENSE.txt
+ *
+ * DISCLAIMER
+ *
+ * Do not edit or add to this file if you wish to upgrade this extension to newer
+ * version in the future.
+ *
+ * @category    Mageplaza
+ * @package     Mageplaza_Seo
+ * @copyright   Copyright (c) Mageplaza (http://www.mageplaza.com/)
+ * @license     https://www.mageplaza.com/LICENSE.txt
+ */
+
 namespace Mageplaza\Seo\Helper;
 
+use Magento\Theme\Block\Html\Header\Logo;
 use Mageplaza\Core\Helper\AbstractData as CoreHelper;
-use Magento\Framework\ObjectManagerInterface;
-use Magento\Store\Model\StoreManagerInterface;
-use Magento\Store\Model\ScopeInterface;
 
+/**
+ * Class Data
+ * @package Mageplaza\Seo\Helper
+ */
 class Data extends CoreHelper
 {
-	const XML_PATH_GENERAL = 'seo/general/';
-	const XML_PATH_META = 'seo/meta/';
-	const XML_PATH_RICHSNIPPETS = 'seo/richsnippets/';
-	const XML_PATH_HTACCESS = 'seo/htaccess/';
-	const XML_PATH_ROBOTS = 'seo/robots/';
-	const XML_PATH_HTML_SITEMAP = 'seo/htmlsitemap/';
-	const XML_PATH_HREFLANG_TAG = 'seo/hreflang/';
-	const XML_PATH_VERIFICATION = 'seo/verification/';
-	protected $objectManager;
+    const CONFIG_MODULE_PATH = 'seo';
 
-	/**
-	 * Data constructor.
-	 *
-	 * @param \Magento\Framework\App\Helper\Context $context
-	 * @param \Magento\Store\Model\StoreManagerInterface $storeManager
-	 * @param \Magento\Framework\ObjectManagerInterface $objectManager
-	 */
-	public function __construct(
-		\Magento\Framework\App\Helper\Context $context,
-		StoreManagerInterface $storeManager,
-		ObjectManagerInterface $objectManager
-	)
-	{
-		$this->objectManager = $objectManager;
-		$this->_storeManager = $storeManager;
+    /**
+     * @param $code
+     * @param null $storeId
+     * @return mixed
+     */
+    public function getMetaConfig($code, $storeId = null)
+    {
+        $code = ($code !== '') ? '/' . $code : '';
 
-		parent::__construct($context, $objectManager, $storeManager);
-	}
+        return $this->getConfigValue(self::CONFIG_MODULE_PATH . '/meta' . $code, $storeId);
+    }
 
-	/**
-	 * @param      $field
-	 * @param null $storeId
-	 *
-	 * @return mixed
-	 */
-	public function getConfigValue($field, $storeId = null)
-	{
-		return $this->scopeConfig->getValue(
-			$field,
-			ScopeInterface::SCOPE_STORE,
-			$storeId
-		);
-	}
+    /**
+     * @param $code
+     * @param null $storeId
+     * @return mixed
+     */
+    public function getVerficationConfig($code, $storeId = null)
+    {
+        $code = ($code !== '') ? '/' . $code : '';
 
-	/**
-	 * @param      $code
-	 * @param null $storeId
-	 *
-	 * @return mixed
-	 */
-	public function getGeneralConfig($code, $storeId = null)
-	{
-		return $this->getConfigValue(self::XML_PATH_GENERAL . $code, $storeId);
-	}
+        return $this->getConfigValue(self::CONFIG_MODULE_PATH . '/verification' . $code, $storeId);
+    }
 
-	/**
-	 * @param      $code
-	 * @param null $storeId
-	 *
-	 * @return mixed
-	 */
-	public function getMetaConfig($code, $storeId = null)
-	{
-		return $this->getConfigValue(self::XML_PATH_META . $code, $storeId);
-	}
+    /**
+     * @param $code
+     * @param null $storeId
+     * @return mixed
+     */
+    public function getRichsnippetsConfig($code, $storeId = null)
+    {
+        $code = ($code !== '') ? '/' . $code : '';
 
+        return $this->getConfigValue(self::CONFIG_MODULE_PATH . '/richsnippets' . $code, $storeId);
+    }
 
-	/**
-	 * @param $code
-	 * @param null $storeId
-	 * @return mixed
-	 */
-	public function getVerficationConfig($code, $storeId = null)
-	{
-		return $this->getConfigValue(self::XML_PATH_VERIFICATION . $code, $storeId);
-	}
+    /**
+     * @param null $code
+     * @param null $storeId
+     * @return mixed
+     */
+    public function getInfoConfig($code = null, $storeId = null)
+    {
+        $code = ($code !== '') ? '/' . $code : '';
 
-	/**
-	 * @param      $code
-	 * @param null $storeId
-	 *
-	 * @return mixed
-	 */
-	public function getRichsnippetsConfig($code, $storeId = null)
-	{
-		return $this->getConfigValue(self::XML_PATH_RICHSNIPPETS . $code, $storeId);
-	}
+        return $this->getConfigValue(self::CONFIG_MODULE_PATH . '/info' . $code, $storeId);
+    }
 
-	/**
-	 * @param      $code
-	 * @param null $storeId
-	 *
-	 * @return mixed
-	 */
-	public function getHtaccessConfig($code, $storeId = null)
-	{
-		return $this->getConfigValue(self::XML_PATH_HTACCESS . $code, $storeId);
-	}
+    /**
+     * @param null $code
+     * @param null $storeId
+     * @return mixed
+     */
+    public function getSocialProfiles($code = null, $storeId = null)
+    {
+        $code = ($code !== '') ? '/' . $code : '';
 
-	/**
-	 * @param      $code
-	 * @param null $storeId
-	 *
-	 * @return mixed
-	 */
-	public function getRobotsConfig($code, $storeId = null)
-	{
-		return $this->getConfigValue(self::XML_PATH_ROBOTS . $code, $storeId);
-	}
+        return $this->getConfigValue(self::CONFIG_MODULE_PATH . '/social_profiles' . $code, $storeId);
+    }
 
+    /**
+     * @param null $code
+     * @param null $storeId
+     * @return mixed
+     */
+    public function getDuplicateConfig($code = null, $storeId = null)
+    {
+        $code = ($code !== '') ? '/' . $code : '';
 
+        return $this->getConfigValue(self::CONFIG_MODULE_PATH . '/duplicate' . $code, $storeId);
+    }
 
+    /**
+     * Create structure data script
+     *
+     * @param $data
+     * @param string $prefixComment
+     * @param string $subfixComment
+     * @return string
+     */
+    public function createStructuredData($data, $prefixComment = '', $subfixComment = '')
+    {
+        $applicationLdJson = $prefixComment;
+        $applicationLdJson .= '<script type="application/ld+json">' . json_encode($data, JSON_PRETTY_PRINT) . '</script>';
+        $applicationLdJson .= $subfixComment;
 
-	/**
-	 * @param      $code
-	 * @param null $storeId
-	 *
-	 * @return mixed
-	 */
-	public function getHtmlsitemapConfig($code, $storeId = null)
-	{
-		return $this->getConfigValue(self::XML_PATH_HTML_SITEMAP . $code, $storeId);
-	}
+        return $applicationLdJson;
+    }
 
+    /**
+     * get Logo image url
+     *
+     * @return string
+     */
+    public function getLogo()
+    {
+        $logo = $this->objectManager->get(Logo::class);
 
-	/**
-	 * info config
-	 * @param null $code
-	 * @return mixed
-	 */
-	public function getInfoConfig($code = null)
-	{
-		return $this->getConfigValue('seo/info/' . $code);
-	}
-
-	/**
-	 * get social share config
-	 * @param null $code
-	 * @return mixed
-	 */
-	public function getSocialShares($code = null)
-	{
-		return $this->getConfigValue('seo/social_shares/' . $code);
-	}
-
-
-	/**
-	 * social profiles config
-	 * @param null $code
-	 * @return mixed
-	 */
-	public function getSocialProfiles($code = null)
-	{
-		return $this->getConfigValue('seo/social_profiles/' . $code);
-	}
-
-	/**
-	 * get duplicate content config
-	 * @param null $code
-	 * @return mixed
-	 */
-	public function getDuplicateConfig($code = null)
-	{
-		return $this->getConfigValue('seo/duplicate/' . $code);
-	}
-
-
-	/**
-	 * convert array to options
-	 *
-	 * @access public
-	 *
-	 * @param $options
-	 *
-	 * @return array
-	 * @author Sam
-	 */
-	public function convertOptions($options)
-	{
-		$converted = array();
-		foreach ($options as $option) {
-			if (isset($option['value']) && !is_array($option['value'])
-				&& isset($option['label'])
-				&& !is_array($option['label'])
-			) {
-				$converted[$option['value']] = $option['label'];
-			}
-		}
-
-		return $converted;
-	}
-
-
-	/**
-	 * get html sitemap
-	 * @return string
-	 */
-	public function getHtmlSitemapUrl()
-	{
-		return $this->_getUrl('mageplaza_seo/sitemap');
-	}
-
-
-	public function getHreflang($code = null)
-	{
-		return $this->getConfigValue(self::XML_PATH_HREFLANG_TAG . $code);
-	}
+        return $logo->getLogoSrc();
+    }
 }

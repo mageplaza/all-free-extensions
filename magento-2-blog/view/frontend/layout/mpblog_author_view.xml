@@ -16,30 +16,22 @@
  *
  * @category    Mageplaza
  * @package     Mageplaza_Blog
- * @copyright   Copyright (c) 2016 Mageplaza (http://www.mageplaza.com/)
+ * @copyright   Copyright (c) 2018 Mageplaza (http://www.mageplaza.com/)
  * @license     https://www.mageplaza.com/LICENSE.txt
  */
 -->
-<page xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" layout="1column" xsi:noNamespaceSchemaLocation="urn:magento:framework:View/Layout/etc/page_configuration.xsd">
+<page xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:framework:View/Layout/etc/page_configuration.xsd">
+    <update handle="mpblog_design" />
     <body>
-
         <referenceContainer name="content">
-            <block class="Mageplaza\Blog\Block\Author\Listpost" template="Mageplaza_Blog::category/post/list.phtml">
-                <block class="Mageplaza\Blog\Block\Author\Widget" name="mp.blog.view.sidebar.author"
-            template="Mageplaza_Blog::author/widget.phtml"/>
-            <!--<block class="Mageplaza\Blog\Block\Frontend" template="Mageplaza_Blog::sidebar/search.phtml" ifconfig="blog/sidebar/search/enable_search" />-->
-            <!--<block class="Mageplaza\Blog\Block\Sidebar\Mostview" name="mp.blog.view.sidebar.mostview"-->
-            <!--template="Mageplaza_Blog::sidebar/mostview.phtml"/>-->
-            <!--<block class="Mageplaza\Blog\Block\Category\Widget" name="mp.blog.view.sidebar.category"-->
-            <!--template="Mageplaza_Blog::category/widget.phtml"/>-->
-            <block class="Mageplaza\Blog\Block\MonthlyArchive\Widget" name="mp.blog.view.sidebar.monthly"
-            template="Mageplaza_Blog::monthly/widget.phtml"/>
-            <!--<block class="Mageplaza\Blog\Block\Topic\Widget" name="mp.blog.view.sidebar.topic"-->
-            <!--template="Mageplaza_Blog::topic/widget.phtml"/>-->
-            <!--<block class="Mageplaza\Blog\Block\Tag\Widget" name="mp.blog.view.sidebar.tag"-->
-            <!--template="Mageplaza_Blog::tag/widget.phtml"/>-->
-
-            </block>
+            <block class="Mageplaza\Blog\Block\Author\Listpost" name="mpblog.post.list" template="post/list.phtml" />
         </referenceContainer>
+        <referenceContainer name="blog.sidebar.main">
+            <block class="Mageplaza\Blog\Block\Author\Widget" after="mpblog.sidebar.mostview" name="mpblog.view.sidebar.author" template="author/widget.phtml"/>
+        </referenceContainer>
+        <referenceBlock name="mpblog.sidebar.category" remove="true"/>
+        <referenceBlock name="mpblog.sidebar.monthly" remove="true"/>
+        <referenceBlock name="mpblog.sidebar.topic" remove="true"/>
+        <referenceBlock name="mpblog.sidebar.tag" remove="true"/>
     </body>
 </page>

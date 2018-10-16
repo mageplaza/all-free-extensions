@@ -15,10 +15,19 @@
  *
  * @category    Mageplaza
  * @package     Mageplaza_Blog
- * @copyright   Copyright (c) 2016 Mageplaza (http://www.mageplaza.com/)
+ * @copyright   Copyright (c) 2018 Mageplaza (http://www.mageplaza.com/)
  * @license     https://www.mageplaza.com/LICENSE.txt
  */
+
 namespace Mageplaza\Blog\Model;
+
+use Magento\Framework\Data\Collection\AbstractDb;
+use Magento\Framework\Model\AbstractModel;
+use Magento\Framework\Model\Context;
+use Magento\Framework\Model\ResourceModel\AbstractResource;
+use Magento\Framework\Registry;
+use Mageplaza\Blog\Model\ResourceModel\Post\CollectionFactory;
+use Mageplaza\Blog\Model\ResourceModel\Topic\CollectionFactory as TopicCollectionFactory;
 
 /**
  * @method Topic setName($name)
@@ -48,7 +57,7 @@ namespace Mageplaza\Blog\Model;
  * @method Topic setAffectedPostIds(array $ids)
  * @method bool getAffectedPostIds()
  */
-class Topic extends \Magento\Framework\Model\AbstractModel
+class Topic extends AbstractModel
 {
     /**
      * Cache tag
@@ -62,7 +71,7 @@ class Topic extends \Magento\Framework\Model\AbstractModel
      *
      * @var string
      */
-	protected $_cacheTag = 'mageplaza_blog_topic';
+    protected $_cacheTag = 'mageplaza_blog_topic';
 
     /**
      * Event prefix
@@ -76,35 +85,44 @@ class Topic extends \Magento\Framework\Model\AbstractModel
      *
      * @var \Mageplaza\Blog\Model\ResourceModel\Post\Collection
      */
-	public $postCollection;
+    public $postCollection;
 
     /**
      * Post Collection Factory
      *
      * @var \Mageplaza\Blog\Model\ResourceModel\Post\CollectionFactory
      */
-	public $postCollectionFactory;
+    public $postCollectionFactory;
 
     /**
-     * constructor
+     * Topic Collection Factory
      *
-     * @param \Mageplaza\Blog\Model\ResourceModel\Post\CollectionFactory $postCollectionFactory
-     * @param \Magento\Framework\Model\Context $context
-     * @param \Magento\Framework\Registry $registry
-     * @param \Magento\Framework\Model\ResourceModel\AbstractResource $resource
-     * @param \Magento\Framework\Data\Collection\AbstractDb $resourceCollection
+     * @var TopicCollectionFactory
+     */
+    public $topicCollectionFactory;
+
+    /**
+     * Topic constructor.
+     * @param Context $context
+     * @param Registry $registry
+     * @param CollectionFactory $postCollectionFactory
+     * @param TopicCollectionFactory $topicCollectionFactory
+     * @param AbstractResource|null $resource
+     * @param AbstractDb|null $resourceCollection
      * @param array $data
      */
     public function __construct(
-        \Mageplaza\Blog\Model\ResourceModel\Post\CollectionFactory $postCollectionFactory,
-        \Magento\Framework\Model\Context $context,
-        \Magento\Framework\Registry $registry,
-        \Magento\Framework\Model\ResourceModel\AbstractResource $resource = null,
-        \Magento\Framework\Data\Collection\AbstractDb $resourceCollection = null,
+        Context $context,
+        Registry $registry,
+        CollectionFactory $postCollectionFactory,
+        TopicCollectionFactory $topicCollectionFactory,
+        AbstractResource $resource = null,
+        AbstractDb $resourceCollection = null,
         array $data = []
-    ) {
-    
+    )
+    {
         $this->postCollectionFactory = $postCollectionFactory;
+        $this->topicCollectionFactory = $topicCollectionFactory;
         parent::__construct($context, $registry, $resource, $resourceCollection, $data);
     }
 
@@ -113,7 +131,7 @@ class Topic extends \Magento\Framework\Model\AbstractModel
      *
      * @return void
      */
-	protected function _construct()
+    protected function _construct()
     {
         $this->_init('Mageplaza\Blog\Model\ResourceModel\Topic');
     }
@@ -138,8 +156,10 @@ class Topic extends \Magento\Framework\Model\AbstractModel
         $values = [];
         $values['enabled'] = '1';
         $values['store_ids'] = '1';
+
         return $values;
     }
+
     /**
      * @return array|mixed
      */
@@ -153,6 +173,7 @@ class Topic extends \Magento\Framework\Model\AbstractModel
             $array = $this->getResource()->getPostsPosition($this);
             $this->setData('posts_position', $array);
         }
+
         return $array;
     }
 
@@ -164,13 +185,13 @@ class Topic extends \Magento\Framework\Model\AbstractModel
         if ($this->postCollection === null) {
             $collection = $this->postCollectionFactory->create();
             $collection->join(
-                'mageplaza_blog_post_topic',
-                'main_table.post_id=mageplaza_blog_post_topic.post_id 
-                AND mageplaza_blog_post_topic.topic_id='.$this->getId(),
+                ['topic' => $this->getResource()->getTable('mageplaza_blog_post_topic')],
+                'main_table.post_id=topic.post_id AND topic.topic_id=' . $this->getId(),
                 ['position']
             );
             $this->postCollection = $collection;
         }
+
         return $this->postCollection;
     }
 }

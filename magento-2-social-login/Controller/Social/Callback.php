@@ -15,19 +15,50 @@
  *
  * @category    Mageplaza
  * @package     Mageplaza_SocialLogin
- * @copyright   Copyright (c) 2016 Mageplaza (http://www.mageplaza.com/)
+ * @copyright   Copyright (c) Mageplaza (http://www.mageplaza.com/)
  * @license     https://www.mageplaza.com/LICENSE.txt
  */
+
 namespace Mageplaza\SocialLogin\Controller\Social;
 
 /**
  * Class Callback
+ *
  * @package Mageplaza\SocialLogin\Controller\Social
  */
-class Callback extends \Magento\Framework\App\Action\Action
+class Callback extends AbstractSocial
 {
-	public function execute()
-	{
-		\Hybrid_Endpoint::process();
-	}
+    /**
+     * @inheritdoc
+     */
+    public function execute()
+    {
+        if ($this->checkRequest('hauth_start', false) && (
+                $this->checkRequest('error_reason', 'user_denied')
+                && $this->checkRequest('error', 'access_denied')
+                && $this->checkRequest('error_code', '200')
+                && $this->checkRequest('hauth_done', 'Facebook')
+                || ($this->checkRequest('hauth_done', 'Twitter') && $this->checkRequest('denied'))
+            )) {
+            return $this->_appendJs(sprintf("<script>window.close();</script>"));
+        }
+
+        \Hybrid_Endpoint::process();
+    }
+
+    /**
+     * @param $key
+     * @param null $value
+     * @return bool|mixed
+     */
+    public function checkRequest($key, $value = null)
+    {
+        $param = $this->getRequest()->getParam($key, false);
+
+        if ($value) {
+            return $param == $value;
+        }
+
+        return $param;
+    }
 }

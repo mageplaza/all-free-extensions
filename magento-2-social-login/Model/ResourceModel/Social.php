@@ -15,24 +15,26 @@
  *
  * @category    Mageplaza
  * @package     Mageplaza_SocialLogin
- * @copyright   Copyright (c) 2016 Mageplaza (http://www.mageplaza.com/)
+ * @copyright   Copyright (c) Mageplaza (http://www.mageplaza.com/)
  * @license     https://www.mageplaza.com/LICENSE.txt
  */
+
 namespace Mageplaza\SocialLogin\Model\ResourceModel;
 
 use Magento\Framework\Model\ResourceModel\Db\AbstractDb;
 
 /**
  * Class Social
+ *
  * @package Mageplaza\SocialLogin\Model\ResourceModel
  */
 class Social extends AbstractDb
 {
-	/**
-	 * Define main table
-	 */
-	protected function _construct()
-	{
-		$this->_init('mageplaza_social_customer', 'social_customer_id');
-	}
+    /**
+     * Define main table
+     */
+    protected function _construct()
+    {
+        $this->_init('mageplaza_social_customer', 'social_customer_id');
+    }
 }

@@ -1,7 +1,0 @@
-<?xml version="1.0"?>
-<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Backend:etc/menu.xsd">
-    <menu>
-        <add id="Mageplaza_GoogleAnalytics::googleanalytics" title="Google Analytics" module="Mageplaza_GoogleAnalytics" sortOrder="44" resource="Mageplaza_GoogleAnalytics::googleanalytics"/>
-        <add id="Mageplaza_GoogleAnalytics::settings" title="Settings" module="Mageplaza_GoogleAnalytics" sortOrder="10" action="adminhtml/system_config/edit/section/googleanalytics" resource="Mageplaza_GoogleAnalytics::settings" parent="Mageplaza_GoogleAnalytics::googleanalytics"/>
-    </menu>
-</config>

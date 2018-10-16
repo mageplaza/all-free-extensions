@@ -15,39 +15,41 @@
  *
  * @category    Mageplaza
  * @package     Mageplaza_Blog
- * @copyright   Copyright (c) 2016 Mageplaza (http://www.mageplaza.com/)
+ * @copyright   Copyright (c) 2018 Mageplaza (http://www.mageplaza.com/)
  * @license     https://www.mageplaza.com/LICENSE.txt
  */
+
 namespace Mageplaza\Blog\Controller\Adminhtml\Post;
 
-class Index extends \Magento\Backend\App\Action
+use Magento\Backend\App\Action;
+use Magento\Backend\App\Action\Context;
+use Magento\Framework\View\Result\PageFactory;
+
+/**
+ * Class Index
+ * @package Mageplaza\Blog\Controller\Adminhtml\Post
+ */
+class Index extends Action
 {
     /**
      * Page result factory
      *
      * @var \Magento\Framework\View\Result\PageFactory
      */
-	public $resultPageFactory;
+    public $resultPageFactory;
 
     /**
-     * Page factory
-     *
-     * @var \Magento\Backend\Model\View\Result\Page
-     */
-	public $resultPage;
-
-    /**
-     * constructor
-     *
-     * @param \Magento\Framework\View\Result\PageFactory $resultPageFactory
+     * Index constructor.
      * @param \Magento\Backend\App\Action\Context $context
+     * @param \Magento\Framework\View\Result\PageFactory $resultPageFactory
      */
     public function __construct(
-        \Magento\Framework\View\Result\PageFactory $resultPageFactory,
-        \Magento\Backend\App\Action\Context $context
-    ) {
-    
+        Context $context,
+        PageFactory $resultPageFactory
+    )
+    {
         $this->resultPageFactory = $resultPageFactory;
+
         parent::__construct($context);
     }
 
@@ -58,30 +60,9 @@ class Index extends \Magento\Backend\App\Action
      */
     public function execute()
     {
-        $this->setPageData();
-        return $this->getResultPage();
-    }
-    /**
-     * instantiate result page object
-     *
-     * @return \Magento\Backend\Model\View\Result\Page|\Magento\Framework\View\Result\Page
-     */
-	public function getResultPage()
-    {
-        if ($this->resultPage === null) {
-            $this->resultPage = $this->resultPageFactory->create();
-        }
-        return $this->resultPage;
-    }
-    /**
-     * set page data
-     *
-     * @return $this
-     */
-	public function setPageData()
-    {
-        $resultPage = $this->getResultPage();
-        $resultPage->getConfig()->getTitle()->prepend((__('Posts')));
-        return $this;
+        $resultPage = $this->resultPageFactory->create();
+        $resultPage->getConfig()->getTitle()->prepend(__('Posts'));
+
+        return $resultPage;
     }
 }

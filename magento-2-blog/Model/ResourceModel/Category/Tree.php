@@ -15,12 +15,26 @@
  *
  * @category    Mageplaza
  * @package     Mageplaza_Blog
- * @copyright   Copyright (c) 2016 Mageplaza (http://www.mageplaza.com/)
+ * @copyright   Copyright (c) 2018 Mageplaza (http://www.mageplaza.com/)
  * @license     https://www.mageplaza.com/LICENSE.txt
  */
+
 namespace Mageplaza\Blog\Model\ResourceModel\Category;
 
-class Tree extends \Magento\Framework\Data\Tree\Dbp
+use Magento\Framework\App\CacheInterface;
+use Magento\Framework\App\ResourceConnection;
+use Magento\Framework\Data\Tree\Dbp;
+use Magento\Framework\DB\Select;
+use Magento\Framework\Event\ManagerInterface;
+use Magento\Store\Model\StoreManagerInterface;
+use Mageplaza\Blog\Model\ResourceModel\Category;
+use Mageplaza\Blog\Model\ResourceModel\Category\CollectionFactory;
+
+/**
+ * Class Tree
+ * @package Mageplaza\Blog\Model\ResourceModel\Category
+ */
+class Tree extends Dbp
 {
     /**
      * ID field
@@ -62,83 +76,84 @@ class Tree extends \Magento\Framework\Data\Tree\Dbp
      *
      * @var \Mageplaza\Blog\Model\ResourceModel\Category\CollectionFactory
      */
-	public $collectionFactory;
+    public $collectionFactory;
 
     /**
      * Blog Category Resource instance
      *
      * @var \Mageplaza\Blog\Model\ResourceModel\Category
      */
-	public $categoryResource;
+    public $categoryResource;
 
     /**
      * Cache instance
      *
      * @var \Magento\Framework\App\CacheInterface
      */
-	public $cache;
+    public $cache;
 
     /**
      * Store Manager instance
      *
      * @var \Magento\Store\Model\StoreManagerInterface
      */
-	public $storeManager;
+    public $storeManager;
 
     /**
      * App resource
      *
      * @var \Magento\Framework\App\ResourceConnection
      */
-	public $coreResource;
+    public $coreResource;
 
     /**
      * Blog Category Collection
      *
      * @var \Mageplaza\Blog\Model\ResourceModel\Category\Collection
      */
-	public $collection;
+    public $collection;
 
     /**
      * Inactive Blog Category Ids
      *
      * @var array
      */
-	public $inactiveCategoryIds;
+    public $inactiveCategoryIds;
 
     /**
-     * constructor
-     *
-     * @param \Magento\Framework\Event\ManagerInterface $eventManager
+     * Tree constructor.
+     * @param ManagerInterface $eventManager
      * @param \Mageplaza\Blog\Model\ResourceModel\Category\CollectionFactory $collectionFactory
-     * @param \Mageplaza\Blog\Model\ResourceModel\Category $categoryResource
-     * @param \Magento\Framework\App\CacheInterface $cache
-     * @param \Magento\Store\Model\StoreManagerInterface $storeManager
-     * @param \Magento\Framework\App\ResourceConnection $coreResource
+     * @param Category $categoryResource
+     * @param CacheInterface $cache
+     * @param StoreManagerInterface $storeManager
+     * @param ResourceConnection $coreResource
+     * @throws \Exception
      */
     public function __construct(
-        \Magento\Framework\Event\ManagerInterface $eventManager,
-        \Mageplaza\Blog\Model\ResourceModel\Category\CollectionFactory $collectionFactory,
-        \Mageplaza\Blog\Model\ResourceModel\Category $categoryResource,
-        \Magento\Framework\App\CacheInterface $cache,
-        \Magento\Store\Model\StoreManagerInterface $storeManager,
-        \Magento\Framework\App\ResourceConnection $coreResource
-    ) {
-    
-        $this->eventManager      = $eventManager;
+        ManagerInterface $eventManager,
+        CollectionFactory $collectionFactory,
+        Category $categoryResource,
+        CacheInterface $cache,
+        StoreManagerInterface $storeManager,
+        ResourceConnection $coreResource
+    )
+    {
+        $this->eventManager = $eventManager;
         $this->collectionFactory = $collectionFactory;
-        $this->categoryResource  = $categoryResource;
-        $this->cache             = $cache;
-        $this->storeManager      = $storeManager;
-        $this->coreResource      = $coreResource;
+        $this->categoryResource = $categoryResource;
+        $this->cache = $cache;
+        $this->storeManager = $storeManager;
+        $this->coreResource = $coreResource;
+
         parent::__construct(
             $coreResource->getConnection('mageplaza_blog_write'),
             $coreResource->getTableName('mageplaza_blog_category'),
             [
-                \Magento\Framework\Data\Tree\Dbp::ID_FIELD => 'category_id',
-                \Magento\Framework\Data\Tree\Dbp::PATH_FIELD => 'path',
-                \Magento\Framework\Data\Tree\Dbp::ORDER_FIELD => 'position',
-                \Magento\Framework\Data\Tree\Dbp::LEVEL_FIELD => 'level'
+                Dbp::ID_FIELD => 'category_id',
+                Dbp::PATH_FIELD => 'path',
+                Dbp::ORDER_FIELD => 'position',
+                Dbp::LEVEL_FIELD => 'level'
             ]
         );
     }
@@ -161,7 +176,8 @@ class Tree extends \Magento\Framework\Data\Tree\Dbp
         $exclude = [],
         $toLoad = true,
         $onlyActive = false
-    ) {
+    )
+    {
         if ($collection === null) {
             $collection = $this->getCollection($sorted);
         } else {
@@ -217,6 +233,7 @@ class Tree extends \Magento\Framework\Data\Tree\Dbp
             $this->initInactiveCategoryIds();
         }
         $this->inactiveCategoryIds = array_merge($ids, $this->inactiveCategoryIds);
+
         return $this;
     }
 
@@ -229,6 +246,7 @@ class Tree extends \Magento\Framework\Data\Tree\Dbp
     {
         $this->inactiveCategoryIds = [];
         $this->eventManager->dispatch('mageplaza_blog_category_tree_init_inactive_category_ids', ['tree' => $this]);
+
         return $this;
     }
 
@@ -255,7 +273,7 @@ class Tree extends \Magento\Framework\Data\Tree\Dbp
      */
     public function getDisabledIds($collection, $allIds)
     {
-    	/* implement this for frontend */
+        /* implement this for frontend */
         return [];
     }
 
@@ -296,6 +314,7 @@ class Tree extends \Magento\Framework\Data\Tree\Dbp
         if ($this->collection === null) {
             $this->collection = $this->getDefaultCollection($sorted);
         }
+
         return $this->collection;
     }
 
@@ -327,6 +346,7 @@ class Tree extends \Magento\Framework\Data\Tree\Dbp
             $this->clean($this->collection);
         }
         $this->collection = $collection;
+
         return $this;
     }
 
@@ -375,6 +395,7 @@ class Tree extends \Magento\Framework\Data\Tree\Dbp
     public function afterMove()
     {
         $this->cache->clean([\Mageplaza\Blog\Model\Category::CACHE_TAG]);
+
         return $this;
     }
 
@@ -417,8 +438,8 @@ class Tree extends \Magento\Framework\Data\Tree\Dbp
             $pathIds = explode('/', $item['path']);
             $level = (int)$item['level'];
             while ($level > 0) {
-            	$lastId = end($pathIds);
-            	$lastIndex = key($lastId);
+                $lastId = end($pathIds);
+                $lastIndex = key($lastId);
                 $pathIds[$lastIndex] = '%';
                 $path = implode('/', $pathIds);
                 $where["{$levelField}={$level} AND {$pathField} LIKE '{$path}'"] = true;
@@ -433,7 +454,7 @@ class Tree extends \Magento\Framework\Data\Tree\Dbp
             $select = $this->createCollectionDataSelect();
         } else {
             $select = clone $this->_select;
-            $select->order($this->_orderField . ' ' . \Magento\Framework\DB\Select::SQL_ASC);
+            $select->order($this->_orderField . ' ' . Select::SQL_ASC);
         }
         $select->where(implode(' OR ', $where));
 
@@ -450,6 +471,7 @@ class Tree extends \Magento\Framework\Data\Tree\Dbp
             $childrenItems[$pathToParent][] = $nodeInfo;
         }
         $this->addChildNodes($childrenItems, '', null);
+
         return $this;
     }
 
@@ -478,10 +500,11 @@ class Tree extends \Magento\Framework\Data\Tree\Dbp
                 'e.category_id IN(?)',
                 $pathIds
             )->order(
-                $this->_conn->getLengthSql('e.path') . ' ' . \Magento\Framework\DB\Select::SQL_ASC
+                $this->_conn->getLengthSql('e.path') . ' ' . Select::SQL_ASC
             );
             $result = $this->_conn->fetchAll($select);
         }
+
         return $result;
     }
 
@@ -489,27 +512,12 @@ class Tree extends \Magento\Framework\Data\Tree\Dbp
      * Obtain select for Categories
      *
      * @param bool $sorted
-     * @param array $optionalAttributes
      * @return \Zend_Db_Select
      */
     public function createCollectionDataSelect($sorted = true)
     {
-
         $select = $this->getDefaultCollection($sorted ? $this->_orderField : false)->getSelect();
 
-        // count children products qty plus self products qty
-        $categoriesTable = $this->coreResource->getTableName('mageplaza_blog_category');
-
-        $subConcat = $this->_conn->getConcatSql(['e.path', $this->_conn->quote('/%')]);
-        $subSelect = $this->_conn->select()->from(
-            ['see' => $categoriesTable],
-            null
-        )->where(
-            'see.category_id = e.category_id'
-        )->orWhere(
-            'see.path LIKE ?',
-            $subConcat
-        );
         return $select;
     }
 
@@ -531,6 +539,7 @@ class Tree extends \Magento\Framework\Data\Tree\Dbp
             ->select()
             ->from($this->_table, ['category_id'])
             ->where('category_id IN (?)', $ids);
+
         return $this->_conn->fetchCol($select);
     }
 }

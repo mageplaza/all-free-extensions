@@ -15,16 +15,20 @@
  *
  * @category    Mageplaza
  * @package     Mageplaza_SocialLogin
- * @copyright   Copyright (c) 2016 Mageplaza (http://www.mageplaza.com/)
+ * @copyright   Copyright (c) Mageplaza (http://www.mageplaza.com/)
  * @license     https://www.mageplaza.com/LICENSE.txt
  */
+
 namespace Mageplaza\SocialLogin\Model\System\Config\Source;
+
+use Magento\Framework\Option\ArrayInterface;
 
 /**
  * Class Color
+ *
  * @package Mageplaza\SocialLogin\Model\System\Config\Source
  */
-class Color implements \Magento\Framework\Option\ArrayInterface
+class Color implements ArrayInterface
 {
     /**
      * Options getter
@@ -33,18 +37,16 @@ class Color implements \Magento\Framework\Option\ArrayInterface
      */
     public function toOptionArray()
     {
-        return [
-            ['value' => '#3399cc', 'label' => __('Default')],
-            ['value' => 'orange', 'label' => __('Orange')],
-            ['value' => 'green', 'label' => __('Green')],
-            ['value' => 'black', 'label' => __('Black')],
-            ['value' => 'blue', 'label' => __('Blue')],
-            ['value' => 'darkblue', 'label' => __('Dark Blue')],
-            ['value' => 'pink', 'label' => __('Pink')],
-            ['value' => 'red', 'label' => __('Red')],
-            ['value' => 'violet', 'label' => __('Violet')],
-            ['value' => 'custom', 'label' => __('Custom')],
-        ];
+        $options = [];
+
+        foreach ($this->toArray() as $value => $label) {
+            $options[] = [
+                'value' => $value,
+                'label' => $label
+            ];
+        }
+
+        return $options;
     }
 
     /**

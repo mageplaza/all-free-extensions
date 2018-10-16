@@ -15,37 +15,98 @@
  *
  * @category    Mageplaza
  * @package     Mageplaza_Blog
- * @copyright   Copyright (c) 2016 Mageplaza (http://www.mageplaza.com/)
+ * @copyright   Copyright (c) 2018 Mageplaza (http://www.mageplaza.com/)
  * @license     https://www.mageplaza.com/LICENSE.txt
  */
+
 namespace Mageplaza\Blog\Plugin;
 
+use Magento\Framework\App\RequestInterface;
+use Magento\Framework\Data\Tree\Node;
+use Magento\Framework\Data\TreeFactory;
+use Mageplaza\Blog\Helper\Data;
+
+/**
+ * Class Topmenu
+ * @package Mageplaza\Blog\Plugin
+ */
 class Topmenu
 {
-    public $helper;
+    /**
+     * @var \Mageplaza\Blog\Helper\Data
+     */
+    protected $helper;
 
+    /**
+     * @var \Magento\Framework\Data\TreeFactory
+     */
+    protected $treeFactory;
+
+    /**
+     * @var \Magento\Framework\App\RequestInterface
+     */
+    protected $request;
+
+    /**
+     * Topmenu constructor.
+     * @param \Mageplaza\Blog\Helper\Data $helper
+     * @param \Magento\Framework\Data\TreeFactory $treeFactory
+     * @param \Magento\Framework\App\RequestInterface $request
+     */
     public function __construct(
-        \Mageplaza\Blog\Helper\Data $helper
+        Data $helper,
+        TreeFactory $treeFactory,
+        RequestInterface $request
     )
-	{
+    {
         $this->helper = $helper;
+        $this->treeFactory = $treeFactory;
+        $this->request = $request;
     }
 
-    public function afterGetHtml(\Magento\Theme\Block\Html\Topmenu $topmenu, $html)
+    /**
+     * @param \Magento\Theme\Block\Html\Topmenu $subject
+     * @param string $outermostClass
+     * @param string $childrenWrapClass
+     * @param int $limit
+     * @return array
+     */
+    public function beforeGetHtml(
+        \Magento\Theme\Block\Html\Topmenu $subject,
+        $outermostClass = '',
+        $childrenWrapClass = '',
+        $limit = 0
+    )
     {
-    	if ($this->helper->getBlogConfig('general/toplinks') && $this->helper->getBlogConfig('general/enabled')){
-			$blogMenu = $topmenu;
-			$blogMenu->getBaseUrl();
-			$blogName = $this->helper->getBlogConfig('general/name') ?: __('Blog');
+        if ($this->helper->isEnabled() && $this->helper->getBlogConfig('general/toplinks')) {
+            $subject->getMenu()
+                ->addChild(
+                    new Node(
+                        $this->getMenuAsArray(),
+                        'id',
+                        $this->treeFactory->create()
+                    )
+                );
+        }
 
-			$html .= "<li class=\"level0 level-top ui-menu-item\">";
-			$html .= "<a href=\"" . $this->helper->getBlogUrl('')
-				. "\" class=\"level-top ui-corner-all\" aria-haspopup=\"true\" tabindex=\"-1\" role=\"menuitem\">
-			<span class=\"ui-menu-icon ui-icon ui-icon-carat-1-e\"></span><span>"
-				. $blogName . "</span></a>";
-			$html .= "</li>";
+        return [$outermostClass, $childrenWrapClass, $limit];
+    }
 
-		}
-		return $html;
+    /**
+     * @return array
+     */
+    private function getMenuAsArray()
+    {
+        $identifier = trim($this->request->getPathInfo(), '/');
+        $routePath = explode('/', $identifier);
+        $routeSize = sizeof($routePath);
+
+        return [
+            'name' => $this->helper->getBlogConfig('general/name') ?: __('Blog'),
+            'id' => 'mpblog-node',
+            'url' => $this->helper->getBlogUrl(''),
+            'has_active' => ($identifier == 'mpblog/post/index'),
+            'is_active' => ('mpblog' == array_shift($routePath)) && ($routeSize == 3)
+        ];
     }
 }
