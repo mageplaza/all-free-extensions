@@ -2,7 +2,8 @@
 
 The Top Magento 2 Extensions by Mageplaza comes with a bulk of amazing features that allow the merchants to do more on their online stores via the richness of the categories including Sales and Motivations, Content Management, even User Experience, etc.
 
-## List of all Magento 2 Free extensions
+
+## 1. List of all Magento 2 Free extensions
 
 - [Banner Slider](https://github.com/mageplaza/magento-2-banner-slider)
 - [Product Slider](https://github.com/mageplaza/magento-2-product-slider)
@@ -18,6 +19,22 @@ The Top Magento 2 Extensions by Mageplaza comes with a bulk of amazing features 
 - [Ajax Layered Navigation](https://github.com/mageplaza/magento-2-ajax-layered-navigation)
 - [Google Xml Sitemap](https://github.com/mageplaza/magento-2-google-xml-sitemap)
 - [Delete Orders](https://github.com/mageplaza/magento-2-delete-orders)
+
+[and more](https://www.mageplaza.com/magento-2-free-extensions/)
+
+
+## 2. How to install Magento 2 Social Login
+
+
+## ✓ Install Free Modules via composer (recommend)
+Run the following command in Magento 2 root folder:
+
+```
+composer require mageplaza/module-free-packs
+php bin/magento setup:upgrade
+php bin/magento setup:static-content:deploy
+```
+
 
 
 ## What is Magento 2 extensions for Commerce?
@@ -35,8 +52,3 @@ Until May 2015, Magento’s market share among the 30 most popular eCommerce pla
 Basing on Magento 2.0 version, the vendors like Mageplaza pay attention on creating Magento 2.0 extensions as many as the merchants’ demand. All of the extensions are the open-source module and attached to the detailed user guide, thus it is easy to customize their configuration how to fit with your store in the appearance and the code without any requirement of code experience. Installing Magento 2 extension on your store will aid you to gain the highest achievement of revenue while don’t need to pay money for PHP outsource.
 
 Magento 2 modules takes care of every parameter of your website to convert a visitor to a customer in loyalty group. By providing multiple solutions about sales, promotions, content management,and user engagement, ensure that you can increase the conversion rate by 30%, and then boost your online sales up to 60% with a huge size of loyal customers. The benefits, Magento 2 modules extensions provide, make the online retailers fall in love with them as well as put all their trust to run Magento 2 extensions on the eCommerce store.
-
-## Suggested extensions on Marketplace
-
-- One Step Checkout: https://marketplace.magento.com/mageplaza-magento-2-one-step-checkout-extension.html
-- Layered Navigation https://marketplace.magento.com/mageplaza-layered-navigation-m2.html

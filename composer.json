@@ -1,6 +1,6 @@
 {
-  "name": "mageplaza/magento-2-social-login",
-  "description": "Magento 2 Social Login extension is designed for quick login to your Magento 2 store without procesing complex register steps",
+  "name": "mageplaza/module-free-packs",
+  "description": "All Mageplaza Free Extensions",
   "require": {
     "mageplaza/module-smtp": "^1.2.6",
     "mageplaza/module-google-recaptcha": "^1.0.2",
@@ -44,5 +44,8 @@
   ],
   "keywords": [
     "magento 2",
+    "magento 2 free",
+    "magento 2 free extensions",
+    "magento 2 free modules",
   ]
 }
