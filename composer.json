@@ -1,5 +1,5 @@
 {
-  "name": "mageplaza/module-free-packs",
+  "name": "mageplaza/module-free-extensions",
   "description": "All Mageplaza Free Extensions",
   "require": {
     "mageplaza/module-smtp": "^1.2.6",
