@@ -30,7 +30,7 @@ The Top Magento 2 Extensions by Mageplaza comes with a bulk of amazing features 
 Run the following command in Magento 2 root folder:
 
 ```
-composer require mageplaza/module-free-packs
+composer require mageplaza/module-free-extensions
 php bin/magento setup:upgrade
 php bin/magento setup:static-content:deploy
 ```
